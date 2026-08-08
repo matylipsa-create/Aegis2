@@ -44,6 +44,7 @@ export interface SensorState {
   cameraError: string | null;
   audioError: string | null;
   gpsError: string | null;
+  audioLevel: number;
 }
 
 export type PageKey = 'dashboard' | 'regulation' | 'operations';

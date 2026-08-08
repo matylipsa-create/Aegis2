@@ -76,6 +76,7 @@ const initialSensors: SensorState = {
   cameraError: null,
   audioError: null,
   gpsError: null,
+  audioLevel: 0,
 };
 
 const initialState: AppState = {

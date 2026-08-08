@@ -3,20 +3,17 @@ import { useApp } from '../context/AppContext';
 
 export function useRealModeSensors() {
   const { state, setSensors } = useApp();
-  const streamRef = useRef<MediaStream | null>(null);
   const watchIdRef = useRef<number | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const audioStreamRef = useRef<MediaStream | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   const realMode = state.settings.realMode;
   const powerSaving = state.settings.powerSavingMode;
 
   useEffect(() => {
     if (!realMode || powerSaving) {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop());
-        streamRef.current = null;
-      }
       if (watchIdRef.current !== null && navigator.geolocation) {
         navigator.geolocation.clearWatch(watchIdRef.current);
         watchIdRef.current = null;
@@ -29,37 +26,21 @@ export function useRealModeSensors() {
         audioStreamRef.current.getTracks().forEach(t => t.stop());
         audioStreamRef.current = null;
       }
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       setSensors({
-        cameraActive: false,
         audioActive: false,
         gpsActive: false,
-        cameraError: null,
         audioError: null,
         gpsError: null,
+        audioLevel: 0,
       });
       return;
     }
 
     let cancelled = false;
-
-    async function startCamera() {
-      try {
-        if (!navigator.mediaDevices?.getUserMedia) {
-          setSensors({ cameraError: 'getUserMedia no soportado' });
-          return;
-        }
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
-          audio: false,
-        });
-        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
-        streamRef.current = stream;
-        setSensors({ cameraActive: true, cameraError: null });
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error desconocido';
-        setSensors({ cameraError: msg, cameraActive: false });
-      }
-    }
 
     async function startAudio() {
       try {
@@ -76,8 +57,26 @@ export function useRealModeSensors() {
         const source = ctx.createMediaStreamSource(stream);
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.6;
         source.connect(analyser);
+        analyserRef.current = analyser;
         setSensors({ audioActive: true, audioError: null });
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        const updateLevel = () => {
+          if (cancelled || !analyserRef.current) return;
+          analyserRef.current.getByteTimeDomainData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            const v = (dataArray[i] - 128) / 128;
+            sum += v * v;
+          }
+          const rms = Math.sqrt(sum / dataArray.length);
+          const level = Math.min(100, Math.round(rms * 200));
+          setSensors({ audioLevel: level });
+          rafRef.current = requestAnimationFrame(updateLevel);
+        };
+        rafRef.current = requestAnimationFrame(updateLevel);
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Error desconocido';
         setSensors({ audioError: msg, audioActive: false });
@@ -107,16 +106,15 @@ export function useRealModeSensors() {
       );
     }
 
-    startCamera();
     startAudio();
     startGPS();
 
     return () => {
       cancelled = true;
-      if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
       if (watchIdRef.current !== null && navigator.geolocation) { navigator.geolocation.clearWatch(watchIdRef.current); watchIdRef.current = null; }
       if (audioCtxRef.current) { audioCtxRef.current.close().catch(() => {}); audioCtxRef.current = null; }
       if (audioStreamRef.current) { audioStreamRef.current.getTracks().forEach(t => t.stop()); audioStreamRef.current = null; }
+      if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     };
   }, [realMode, powerSaving, setSensors]);
 }

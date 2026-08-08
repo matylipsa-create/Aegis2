@@ -18,7 +18,7 @@ import Operations from './pages/Operations';
 const ONBOARDING_KEY = 'aegis-onboarded';
 
 function AppShell() {
-  const { state, setMode, setStatus, setCurrentPage, setDemoMode } = useApp();
+  const { state, setMode, setCurrentPage, setDemoMode } = useApp();
   useDemoEventGenerator();
   useMetricsUpdater();
   useRealModeSensors();
@@ -38,11 +38,6 @@ function AppShell() {
 
   const handleArm = () => {
     console.log(`[AEGIS] ${state.status === 'ARMADO' ? 'Desarmando' : 'Armando'} sistema...`);
-  };
-
-  const handlePanic = () => {
-    console.log('[AEGIS] PANICO activado!');
-    setStatus('ARMADO');
   };
 
   const handleOnboardingComplete = () => {
@@ -81,7 +76,7 @@ function AppShell() {
 
       <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-24"
         style={{ paddingTop, WebkitOverflowScrolling: 'touch' }}>
-        {page === 'dashboard' && <Dashboard isTechnical={state.mode === 'technical'} onArm={handleArm} onPanic={handlePanic} />}
+        {page === 'dashboard' && <Dashboard isTechnical={state.mode === 'technical'} onArm={handleArm} />}
         {page === 'regulation' && <Regulation />}
         {page === 'operations' && <Operations />}
       </main>
