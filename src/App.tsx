@@ -7,6 +7,7 @@ import BottomNav from './components/BottomNav';
 import DemoModeBanner from './components/DemoModeBanner';
 import AegisMetricsPanel from './components/AegisMetricsPanel';
 import OnboardingGuide from './components/OnboardingGuide';
+import Landing from './components/Landing';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
 import type { PageKey } from './types';
@@ -20,6 +21,7 @@ function AppShell() {
   useDemoEventGenerator();
   useMetricsUpdater();
 
+  const [showLanding, setShowLanding] = useState(true);
   const [page, setPage] = useState('dashboard');
   const [showSettings, setShowSettings] = useState(false);
   const [showMetrics, setShowMetrics] = useState(false);
@@ -55,6 +57,10 @@ function AppShell() {
       setCurrentPage(p as PageKey);
     }
   };
+
+  if (showLanding) {
+    return <Landing onEnterApp={() => setShowLanding(false)} />;
+  }
 
   return (
     <div className={`h-screen flex flex-col ${powerSaving ? 'power-saving-mode' : ''}`} style={{ background: 'linear-gradient(180deg, #0A0C1A 0%, #050510 100%)' }}>
