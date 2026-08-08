@@ -1,0 +1,183 @@
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, PageKey } from '../types';
+
+const DEMO_KEY = 'aegis-demo-mode';
+const SETTINGS_KEY = 'aegis-settings';
+
+function loadSettings(): AppSettings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) return { ...defaults, ...JSON.parse(raw) };
+  } catch { /* noop */ }
+  return defaults;
+}
+
+const defaults: AppSettings = {
+  pipedreamWebhookUrl: '',
+  sendDemoToTelegram: true,
+  powerSavingMode: false,
+};
+
+function saveSettings(s: AppSettings) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch { /* noop */ }
+}
+
+function checkDemoMode(): boolean {
+  try {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('demo') === 'true') {
+      localStorage.setItem(DEMO_KEY, 'true');
+      return true;
+    }
+    return localStorage.getItem(DEMO_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function buildModules(mode: AppMode, powerSaving: boolean): ModuleState[] {
+  if (powerSaving) {
+    return [
+      { key: 'CAM', label: 'Camaras', active: false, loaded: false },
+      { key: 'AUDIO', label: 'Audio', active: false, loaded: false },
+      { key: 'GPS', label: 'GPS', active: true, loaded: true },
+      { key: 'IA', label: 'IA', active: false, loaded: false },
+      { key: 'IDB', label: 'IndexedDB', active: true, loaded: true },
+      { key: 'FIFO', label: 'FIFO Queue', active: true, loaded: true },
+    ];
+  }
+  if (mode === 'normal') {
+    return [
+      { key: 'CAM', label: 'Camaras', active: true, loaded: true },
+      { key: 'AUDIO', label: 'Audio (pasivo)', active: true, loaded: true },
+      { key: 'GPS', label: 'GPS', active: true, loaded: true },
+      { key: 'IA', label: 'IA', active: false, loaded: false },
+      { key: 'IDB', label: 'IndexedDB', active: true, loaded: true },
+      { key: 'FIFO', label: 'FIFO Queue', active: true, loaded: true },
+    ];
+  }
+  return [
+    { key: 'CAM', label: 'Camaras', active: true, loaded: true },
+    { key: 'AUDIO', label: 'Audio', active: true, loaded: true },
+    { key: 'GPS', label: 'GPS', active: true, loaded: true },
+    { key: 'IA', label: 'IA', active: true, loaded: true },
+    { key: 'IDB', label: 'IndexedDB', active: true, loaded: true },
+    { key: 'FIFO', label: 'FIFO Queue', active: true, loaded: true },
+  ];
+}
+
+const initialState: AppState = {
+  mode: 'normal',
+  status: 'STANDBY',
+  alertLevel: 'SEGURO',
+  confidence: 92,
+  cognitiveLoad: 35,
+  events: [],
+  modules: buildModules('normal', false),
+  cameras: [
+    { id: 'cam-01', label: 'Camara Frontal', type: 'CAM', status: 'active' },
+    { id: 'cam-02', label: 'Camara Trasera', type: 'CAM', status: 'active' },
+    { id: 'ip-01', label: 'IP Perimetro', type: 'IP', status: 'active' },
+    { id: 'ptz-01', label: 'PTZ Patio', type: 'PTZ', status: 'standby' },
+    { id: 'vis-01', label: 'Vision IA', type: 'VISION', status: 'standby' },
+  ],
+  settings: loadSettings(),
+  telegramSentCount: 0,
+  demoMode: false,
+};
+
+export type CameraStateStatus = 'active' | 'fail' | 'connecting' | 'standby' | 'unavailable';
+
+interface AppContextValue {
+  state: AppState;
+  setMode: (m: AppMode) => void;
+  setStatus: (s: SystemStatus) => void;
+  setAlertLevel: (a: AlertLevel) => void;
+  addEvent: (e: SecurityEvent) => void;
+  updateModule: (key: string, patch: Partial<Pick<ModuleState, 'active' | 'loaded'>>) => void;
+  updateCamera: (id: string, patch: Partial<Pick<CameraState, 'status'>>) => void;
+  updateSettings: (s: Partial<AppSettings>) => void;
+  incrementTelegramCount: () => void;
+  markEventTelegramSent: (id: string) => void;
+  setConfidence: (n: number) => void;
+  setCognitiveLoad: (n: number) => void;
+  currentPage: PageKey;
+  setCurrentPage: (p: PageKey) => void;
+  isWorkerActive: (workerType: 'ia' | 'vision') => boolean;
+}
+
+const AppContext = createContext<AppContextValue | null>(null);
+
+export function AppProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<AppState>(() => ({
+    ...initialState,
+    demoMode: checkDemoMode(),
+    modules: buildModules(initialState.mode, loadSettings().powerSavingMode),
+  }));
+  const [currentPage, setCurrentPage] = useState<PageKey>('dashboard');
+
+  const setMode = useCallback((mode: AppMode) => setState(s => ({
+    ...s,
+    mode,
+    modules: buildModules(mode, s.settings.powerSavingMode),
+  })), []);
+
+  const setStatus = useCallback((status: SystemStatus) => setState(s => ({ ...s, status })), []);
+  const setAlertLevel = useCallback((alertLevel: AlertLevel) => setState(s => ({ ...s, alertLevel })), []);
+  const setConfidence = useCallback((confidence: number) => setState(s => ({ ...s, confidence })), []);
+  const setCognitiveLoad = useCallback((cognitiveLoad: number) => setState(s => ({ ...s, cognitiveLoad })), []);
+
+  const addEvent = useCallback((e: SecurityEvent) => setState(s => ({
+    ...s,
+    events: [e, ...s.events].slice(0, 50),
+  })), []);
+
+  const updateModule = useCallback((key: string, patch: Partial<{ active: boolean; loaded: boolean }>) =>
+    setState(s => ({ ...s, modules: s.modules.map(m => m.key === key ? { ...m, ...patch } : m) })), []);
+
+  const updateCamera = useCallback((id: string, patch: Partial<{ status: CameraStateStatus }>) =>
+    setState(s => ({ ...s, cameras: s.cameras.map(c => c.id === id ? { ...c, ...patch } : c) })), []);
+
+  const updateSettings = useCallback((patch: Partial<AppSettings>) => setState(s => {
+    const settings = { ...s.settings, ...patch };
+    saveSettings(settings);
+    const modules = patch.powerSavingMode !== undefined
+      ? buildModules(s.mode, patch.powerSavingMode)
+      : s.modules;
+    return { ...s, settings, modules };
+  }), []);
+
+  const incrementTelegramCount = useCallback(() => setState(s => ({ ...s, telegramSentCount: s.telegramSentCount + 1 })), []);
+
+  const markEventTelegramSent = useCallback((id: string) => setState(s => ({
+    ...s,
+    events: s.events.map(e => e.id === id ? { ...e, telegramSent: true } : e),
+  })), []);
+
+  const isWorkerActive = useCallback((workerType: 'ia' | 'vision'): boolean => {
+    if (state.settings.powerSavingMode) return false;
+    if (state.mode === 'normal') return false;
+    if (currentPage !== 'operations') return false;
+    if (workerType === 'ia') return state.modules.some(m => m.key === 'IA' && m.active);
+    if (workerType === 'vision') return state.modules.some(m => m.key === 'CAM' && m.active);
+    return false;
+  }, [state.settings.powerSavingMode, state.mode, currentPage, state.modules]);
+
+  return (
+    <AppContext.Provider value={{
+      state, setMode, setStatus, setAlertLevel, addEvent, updateModule,
+      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad,
+      currentPage, setCurrentPage, isWorkerActive,
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
+}
+
+export function useApp() {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error('useApp must be used within AppProvider');
+  return ctx;
+}
+
+export { DEMO_KEY };
