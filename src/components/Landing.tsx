@@ -5,7 +5,6 @@ import {
   FileLock2,
   Layers,
   BrainCircuit,
-  ArrowDown,
   ArrowRight,
   Github,
   Instagram,
@@ -55,10 +54,6 @@ const SOCIAL_LINKS = [
 export default function Landing({ onEnterApp }: LandingProps) {
   const whatRef = useRef<HTMLDivElement>(null);
 
-  const scrollToWhat = () => {
-    whatRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
   useEffect(() => {
     const sections = document.querySelectorAll('.land-reveal');
     const observer = new IntersectionObserver(
@@ -89,9 +84,9 @@ export default function Landing({ onEnterApp }: LandingProps) {
           <p className="land-hero-sub">
             Aegis es un sistema que te devuelve el control. No reemplaza tu juicio, lo amplifica.
           </p>
-          <button onClick={scrollToWhat} className="land-btn-primary">
+          <button onClick={onEnterApp} className="land-btn-primary">
             Conocé Aegis
-            <ArrowDown size={18} className="land-btn-arrow" />
+            <ArrowRight size={18} className="land-btn-arrow" />
           </button>
         </div>
         <div className="land-hero-scroll-hint" aria-hidden="true" />
