@@ -101,6 +101,7 @@ interface AppContextValue {
   markEventTelegramSent: (id: string) => void;
   setConfidence: (n: number) => void;
   setCognitiveLoad: (n: number) => void;
+  setDemoMode: (v: boolean) => void;
   currentPage: PageKey;
   setCurrentPage: (p: PageKey) => void;
   isWorkerActive: (workerType: 'ia' | 'vision') => boolean;
@@ -126,6 +127,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setAlertLevel = useCallback((alertLevel: AlertLevel) => setState(s => ({ ...s, alertLevel })), []);
   const setConfidence = useCallback((confidence: number) => setState(s => ({ ...s, confidence })), []);
   const setCognitiveLoad = useCallback((cognitiveLoad: number) => setState(s => ({ ...s, cognitiveLoad })), []);
+  const setDemoMode = useCallback((demoMode: boolean) => setState(s => ({ ...s, demoMode })), []);
 
   const addEvent = useCallback((e: SecurityEvent) => setState(s => ({
     ...s,
@@ -166,7 +168,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{
       state, setMode, setStatus, setAlertLevel, addEvent, updateModule,
-      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad,
+      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad, setDemoMode,
       currentPage, setCurrentPage, isWorkerActive,
     }}>
       {children}

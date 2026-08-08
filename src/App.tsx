@@ -17,7 +17,7 @@ import Operations from './pages/Operations';
 const ONBOARDING_KEY = 'aegis-onboarded';
 
 function AppShell() {
-  const { state, setMode, setStatus, setCurrentPage } = useApp();
+  const { state, setMode, setStatus, setCurrentPage, setDemoMode } = useApp();
   useDemoEventGenerator();
   useMetricsUpdater();
 
@@ -58,8 +58,13 @@ function AppShell() {
     }
   };
 
+  const handleEnterApp = () => {
+    setShowLanding(false);
+    setDemoMode(true);
+  };
+
   if (showLanding) {
-    return <Landing onEnterApp={() => setShowLanding(false)} />;
+    return <Landing onEnterApp={handleEnterApp} />;
   }
 
   return (
