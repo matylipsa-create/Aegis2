@@ -32,6 +32,18 @@ export interface AppSettings {
   pipedreamWebhookUrl: string;
   sendDemoToTelegram: boolean;
   powerSavingMode: boolean;
+  realMode: boolean;
+}
+
+export interface SensorState {
+  cameraActive: boolean;
+  audioActive: boolean;
+  gpsActive: boolean;
+  gpsLat: number | null;
+  gpsLng: number | null;
+  cameraError: string | null;
+  audioError: string | null;
+  gpsError: string | null;
 }
 
 export type PageKey = 'dashboard' | 'regulation' | 'operations';
@@ -48,4 +60,5 @@ export interface AppState {
   settings: AppSettings;
   telegramSentCount: number;
   demoMode: boolean;
+  sensors: SensorState;
 }

@@ -60,7 +60,7 @@ export default function EmergencyCallButtons({ variant, onPress }: Props) {
           style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
           onClick={() => setShowConfirm(false)}>
           <div className="animate-scale-in w-full max-w-xs mx-4 rounded-2xl p-6 text-center"
-            style={{ background: 'linear-gradient(180deg, #1A1209 0%, #0A0C1A 100%)', border: '1px solid rgba(245,158,11,0.3)' }}
+            style={{ background: 'linear-gradient(180deg, #1A1209 0%, #0A0C12 100%)', border: '1px solid rgba(245,158,11,0.3)' }}
             onClick={e => e.stopPropagation()}>
             <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center"
               style={{ background: 'rgba(245,158,11,0.15)', border: '2px solid rgba(245,158,11,0.4)' }}>

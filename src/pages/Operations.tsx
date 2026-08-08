@@ -11,9 +11,9 @@ export default function Operations() {
       </div>
 
       <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
-          <Activity size={16} className="mx-auto mb-1" style={{ color: '#3B82F6' }} />
-          <div className="text-lg font-bold font-mono" style={{ color: '#3B82F6' }}>{state.events.length}</div>
+        <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
+          <Activity size={16} className="mx-auto mb-1" style={{ color: '#FBBF24' }} />
+          <div className="text-lg font-bold font-mono" style={{ color: '#FBBF24' }}>{state.events.length}</div>
           <div className="text-[9px]" style={{ color: '#6B7280' }}>Eventos</div>
         </div>
         <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}>
@@ -30,7 +30,7 @@ export default function Operations() {
 
       <div>
         <div className="flex items-center gap-1.5 mb-2">
-          <Radio size={12} style={{ color: '#3B82F6' }} />
+          <Radio size={12} style={{ color: '#FBBF24' }} />
           <span className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Cola de Eventos (FIFO)</span>
         </div>
         <div className="space-y-1 max-h-64 overflow-y-auto">
@@ -47,7 +47,7 @@ export default function Operations() {
                 <div className="flex items-center gap-1.5">
                   {e.telegramSent && (
                     <span className="flex items-center gap-0.5 text-[8px] px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'rgba(59,130,246,0.15)', color: '#60A5FA', border: '1px solid rgba(59,130,246,0.3)' }}>
+                      style={{ background: 'rgba(251,191,36,0.15)', color: '#FCD34D', border: '1px solid rgba(251,191,36,0.3)' }}>
                       <CheckCircle2 size={8} /> Telegram
                     </span>
                   )}

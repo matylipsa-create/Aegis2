@@ -17,7 +17,7 @@ function ModuleRow({ mod }: { mod: ModuleState }) {
     <div className="flex items-center justify-between py-2 px-3 rounded-lg"
       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="flex items-center gap-2">
-        <Icon size={16} style={{ color: mod.active ? '#3B82F6' : '#6B7280' }} />
+        <Icon size={16} style={{ color: mod.active ? '#FBBF24' : '#6B7280' }} />
         <span className="text-sm font-medium" style={{ color: '#E5E7EB' }}>{mod.label}</span>
       </div>
       <div className="flex items-center gap-2">
@@ -82,12 +82,12 @@ export default function AegisMetricsPanel({ open, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={onClose}>
       <div className="animate-slide-up w-full sm:max-w-md max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl"
-        style={{ background: 'linear-gradient(180deg, #111326 0%, #0A0C1A 100%)', border: '1px solid rgba(59,130,246,0.2)', boxShadow: '0 -10px 40px rgba(0,0,0,0.5)' }}
+        style={{ background: 'linear-gradient(180deg, #1A2A3A 0%, #0A0C12 100%)', border: '1px solid rgba(251,191,36,0.2)', boxShadow: '0 -10px 40px rgba(0,0,0,0.5)' }}
         onClick={e => e.stopPropagation()}>
 
         <div className="sticky top-0 flex items-center justify-between px-5 py-4" style={{ background: 'rgba(10,12,26,0.95)', borderBottom: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
           <div className="flex items-center gap-2">
-            <Shield size={20} style={{ color: '#3B82F6' }} />
+            <Shield size={20} style={{ color: '#FBBF24' }} />
             <span className="font-display font-semibold text-white">Metricas del Sistema</span>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg transition-all active:scale-90" style={{ background: 'rgba(255,255,255,0.05)' }}>
@@ -115,7 +115,7 @@ export default function AegisMetricsPanel({ open, onClose }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <MetricCard label="Confianza Global" value={`${state.confidence}%`} color={state.confidence > 80 ? '#22C55E' : state.confidence > 60 ? '#FBBF24' : '#EF4444'} pulse={state.confidence < 70} />
             <MetricCard label="Carga Cognitiva" value={`${state.cognitiveLoad}%`} color={state.cognitiveLoad > 70 ? '#EF4444' : state.cognitiveLoad > 50 ? '#FBBF24' : '#22C55E'} />
-            <MetricCard label="Eventos en Cola" value={String(state.events.length)} color="#3B82F6" />
+            <MetricCard label="Eventos en Cola" value={String(state.events.length)} color="#FBBF24" />
             <MetricCard label="Modulos Activos" value={`${activeModules}/${state.modules.length}`} color="#22C55E" />
           </div>
 
@@ -135,28 +135,28 @@ export default function AegisMetricsPanel({ open, onClose }: Props) {
 
           <div className="grid grid-cols-3 gap-2">
             <div className="rounded-xl p-2.5 flex flex-col items-center gap-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <Camera size={14} style={{ color: isPowerSaving ? '#6B7280' : '#3B82F6' }} />
+              <Camera size={14} style={{ color: isPowerSaving ? '#6B7280' : '#FBBF24' }} />
               <div className="text-[9px]" style={{ color: '#6B7280' }}>Camara</div>
               <div className="text-xs font-mono" style={{ color: isPowerSaving ? '#6B7280' : '#9CA3AF' }}>{camQuality}</div>
             </div>
             <div className="rounded-xl p-2.5 flex flex-col items-center gap-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <Mic size={14} style={{ color: isPowerSaving ? '#6B7280' : '#3B82F6' }} />
+              <Mic size={14} style={{ color: isPowerSaving ? '#6B7280' : '#FBBF24' }} />
               <div className="text-[9px]" style={{ color: '#6B7280' }}>Audio</div>
               <div className="text-xs font-mono" style={{ color: isPowerSaving ? '#6B7280' : '#9CA3AF' }}>{audioQuality}</div>
             </div>
             <div className="rounded-xl p-2.5 flex flex-col items-center gap-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <Activity size={14} style={{ color: '#3B82F6' }} />
+              <Activity size={14} style={{ color: '#FBBF24' }} />
               <div className="text-[9px]" style={{ color: '#6B7280' }}>Update</div>
               <div className="text-xs font-mono" style={{ color: '#9CA3AF' }}>{updateFreq}</div>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl p-3 flex items-center gap-2" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.25)' }}>
-              <Send size={16} style={{ color: '#3B82F6' }} />
+            <div className="rounded-xl p-3 flex items-center gap-2" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)' }}>
+              <Send size={16} style={{ color: '#FBBF24' }} />
               <div>
                 <div className="text-[9px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Enviados a Telegram</div>
-                <div className="text-base font-bold font-mono" style={{ color: '#3B82F6' }}>{state.telegramSentCount}</div>
+                <div className="text-base font-bold font-mono" style={{ color: '#FBBF24' }}>{state.telegramSentCount}</div>
               </div>
             </div>
             <div className="rounded-xl p-3 flex items-center gap-2" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)' }}>

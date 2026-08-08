@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { useDemoEventGenerator } from './hooks/useDemoEventGenerator';
 import { useMetricsUpdater } from './hooks/useMetricsUpdater';
+import { useRealModeSensors } from './hooks/useRealModeSensors';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import DemoModeBanner from './components/DemoModeBanner';
@@ -20,6 +21,7 @@ function AppShell() {
   const { state, setMode, setStatus, setCurrentPage, setDemoMode } = useApp();
   useDemoEventGenerator();
   useMetricsUpdater();
+  useRealModeSensors();
 
   const [showLanding, setShowLanding] = useState(true);
   const [page, setPage] = useState('dashboard');
@@ -68,7 +70,7 @@ function AppShell() {
   }
 
   return (
-    <div className={`h-screen flex flex-col ${powerSaving ? 'power-saving-mode' : ''}`} style={{ background: 'linear-gradient(180deg, #0A0C1A 0%, #050510 100%)' }}>
+    <div className={`h-screen flex flex-col ${powerSaving ? 'power-saving-mode' : ''}`} style={{ background: 'linear-gradient(180deg, #0A0C12 0%, #000000 100%)' }}>
       <TopBar
         onToggleMode={handleToggleMode}
         onOpenSettings={() => setShowSettings(true)}

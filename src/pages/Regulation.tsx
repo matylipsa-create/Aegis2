@@ -21,8 +21,8 @@ export default function Regulation() {
             <div key={r.title} className="rounded-xl p-4 transition-all active:scale-[0.98]"
               style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <div className="flex items-start gap-3">
-                <div className="rounded-lg p-2 flex-shrink-0" style={{ background: 'rgba(59,130,246,0.1)' }}>
-                  <Icon size={18} style={{ color: '#3B82F6' }} />
+                <div className="rounded-lg p-2 flex-shrink-0" style={{ background: 'rgba(251,191,36,0.1)' }}>
+                  <Icon size={18} style={{ color: '#FBBF24' }} />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-white mb-0.5">{r.title}</h3>

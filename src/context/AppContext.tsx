@@ -1,8 +1,15 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, PageKey } from '../types';
+import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, SensorState, PageKey } from '../types';
 
 const DEMO_KEY = 'aegis-demo-mode';
 const SETTINGS_KEY = 'aegis-settings';
+
+const defaults: AppSettings = {
+  pipedreamWebhookUrl: '',
+  sendDemoToTelegram: true,
+  powerSavingMode: false,
+  realMode: false,
+};
 
 function loadSettings(): AppSettings {
   try {
@@ -11,12 +18,6 @@ function loadSettings(): AppSettings {
   } catch { /* noop */ }
   return defaults;
 }
-
-const defaults: AppSettings = {
-  pipedreamWebhookUrl: '',
-  sendDemoToTelegram: true,
-  powerSavingMode: false,
-};
 
 function saveSettings(s: AppSettings) {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch { /* noop */ }
@@ -66,6 +67,17 @@ function buildModules(mode: AppMode, powerSaving: boolean): ModuleState[] {
   ];
 }
 
+const initialSensors: SensorState = {
+  cameraActive: false,
+  audioActive: false,
+  gpsActive: false,
+  gpsLat: null,
+  gpsLng: null,
+  cameraError: null,
+  audioError: null,
+  gpsError: null,
+};
+
 const initialState: AppState = {
   mode: 'normal',
   status: 'STANDBY',
@@ -84,6 +96,7 @@ const initialState: AppState = {
   settings: loadSettings(),
   telegramSentCount: 0,
   demoMode: false,
+  sensors: initialSensors,
 };
 
 export type CameraStateStatus = 'active' | 'fail' | 'connecting' | 'standby' | 'unavailable';
@@ -102,6 +115,7 @@ interface AppContextValue {
   setConfidence: (n: number) => void;
   setCognitiveLoad: (n: number) => void;
   setDemoMode: (v: boolean) => void;
+  setSensors: (patch: Partial<SensorState>) => void;
   currentPage: PageKey;
   setCurrentPage: (p: PageKey) => void;
   isWorkerActive: (workerType: 'ia' | 'vision') => boolean;
@@ -128,6 +142,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setConfidence = useCallback((confidence: number) => setState(s => ({ ...s, confidence })), []);
   const setCognitiveLoad = useCallback((cognitiveLoad: number) => setState(s => ({ ...s, cognitiveLoad })), []);
   const setDemoMode = useCallback((demoMode: boolean) => setState(s => ({ ...s, demoMode })), []);
+  const setSensors = useCallback((patch: Partial<SensorState>) => setState(s => ({ ...s, sensors: { ...s.sensors, ...patch } })), []);
 
   const addEvent = useCallback((e: SecurityEvent) => setState(s => ({
     ...s,
@@ -168,7 +183,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{
       state, setMode, setStatus, setAlertLevel, addEvent, updateModule,
-      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad, setDemoMode,
+      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad, setDemoMode, setSensors,
       currentPage, setCurrentPage, isWorkerActive,
     }}>
       {children}
