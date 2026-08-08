@@ -16,7 +16,7 @@ export default function BottomNav({ active, onNavigate, onOpenSettings }: Props)
   const items = [
     { key: 'dashboard', icon: Home, label: 'Inicio', badge: activeEvents > 0 ? String(activeEvents) : null, badgeColor: '#EF4444' },
     { key: 'regulation', icon: BookOpen, label: 'Regulacion', badge: cogState, badgeColor: cogState === 'ALTA' ? '#EF4444' : cogState === 'MED' ? '#FBBF24' : '#22C55E' },
-    { key: 'operations', icon: Activity, label: 'Operaciones', badge: pendingEvents > 0 ? String(pendingEvents) : null, badgeColor: '#3B82F6' },
+    { key: 'operations', icon: Activity, label: 'Operaciones', badge: pendingEvents > 0 ? String(pendingEvents) : null, badgeColor: '#FBBF24' },
     { key: 'settings', icon: SettingsIcon, label: 'Config', badge: state.mode === 'technical' ? 'TEC' : 'NOR', badgeColor: '#9CA3AF' },
   ];
 
@@ -31,9 +31,9 @@ export default function BottomNav({ active, onNavigate, onOpenSettings }: Props)
           <button key={item.key}
             onClick={() => isSettings ? onOpenSettings() : onNavigate(item.key)}
             className="relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all active:scale-90"
-            style={{ background: isActive ? 'rgba(59,130,246,0.1)' : 'transparent' }}>
-            <Icon size={20} style={{ color: isActive ? '#3B82F6' : '#6B7280' }} />
-            <span className="text-[9px] font-medium" style={{ color: isActive ? '#3B82F6' : '#6B7280' }}>{item.label}</span>
+            style={{ background: isActive ? 'rgba(251,191,36,0.1)' : 'transparent' }}>
+            <Icon size={20} style={{ color: isActive ? '#FBBF24' : '#6B7280' }} />
+            <span className="text-[9px] font-medium" style={{ color: isActive ? '#FBBF24' : '#6B7280' }}>{item.label}</span>
             {item.badge && (
               <span className="nav-badge" style={{ background: item.badgeColor, color: '#fff' }}>
                 {item.badge}

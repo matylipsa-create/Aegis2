@@ -22,10 +22,10 @@ export default function OnboardingGuide({ onComplete }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(5,5,16,0.85)', backdropFilter: 'blur(8px)' }}>
-      <div className="animate-scale-in w-full max-w-sm mx-4 rounded-2xl p-6" style={{ background: 'linear-gradient(180deg, #111326 0%, #0A0C1A 100%)', border: '1px solid rgba(59,130,246,0.2)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+      <div className="animate-scale-in w-full max-w-sm mx-4 rounded-2xl p-6" style={{ background: 'linear-gradient(180deg, #1A2A3A 0%, #0A0C12 100%)', border: '1px solid rgba(251,191,36,0.2)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
         <div className="flex flex-col items-center text-center">
-          <div className="mb-4 rounded-2xl p-4" style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)' }}>
-            <Icon size={36} style={{ color: '#3B82F6' }} />
+          <div className="mb-4 rounded-2xl p-4" style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.3)' }}>
+            <Icon size={36} style={{ color: '#FBBF24' }} />
           </div>
           <h2 className="font-display text-lg font-semibold text-white mb-2">{S.title}</h2>
           <p className="text-sm leading-relaxed mb-6" style={{ color: '#9CA3AF' }}>{S.desc}</p>
@@ -34,7 +34,7 @@ export default function OnboardingGuide({ onComplete }: Props) {
         <div className="flex items-center justify-center gap-1.5 mb-6">
           {STEPS.map((_, i) => (
             <div key={i} className="h-1.5 rounded-full transition-all duration-300"
-              style={{ width: i === step ? 24 : 8, background: i <= step ? '#3B82F6' : 'rgba(255,255,255,0.15)' }} />
+              style={{ width: i === step ? 24 : 8, background: i <= step ? '#FBBF24' : 'rgba(255,255,255,0.15)' }} />
           ))}
         </div>
 
@@ -48,7 +48,7 @@ export default function OnboardingGuide({ onComplete }: Props) {
           )}
           <button onClick={() => isLast ? onComplete() : setStep(s => s + 1)}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 flex items-center justify-center gap-1"
-            style={{ background: 'linear-gradient(135deg, #3B82F6, #2563EB)', color: '#fff', boxShadow: '0 4px 14px rgba(59,130,246,0.4)' }}>
+            style={{ background: 'linear-gradient(135deg, #FBBF24, #F59E0B)', color: '#0A0C12', boxShadow: '0 4px 14px rgba(251,191,36,0.4)' }}>
             {isLast ? 'Comenzar' : 'Siguiente'} {!isLast && <ArrowRight size={14} />}
           </button>
         </div>

@@ -3,13 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --c-primary: #3B82F6;
+  --c-primary: #FBBF24;
+  --c-primary-dark: #F59E0B;
   --c-success: #22C55E;
   --c-warning: #FBBF24;
   --c-danger: #EF4444;
-  --c-dark: #0A0C1A;
+  --c-dark: #0A0C12;
   --c-darker: #050510;
   --c-accent: #F59E0B;
+  --c-blue: #1A2A3A;
 }
 
 * { box-sizing: border-box; }
@@ -296,7 +298,7 @@ body {
   text-align: center;
   padding: 2rem 1.5rem;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 30%, #112030 0%, #0A0C1A 55%, #050510 100%);
+  background: radial-gradient(ellipse at 50% 30%, #1A2A3A 0%, #0A0C12 55%, #000000 100%);
 }
 .land-hero-glow {
   position: absolute;
@@ -306,7 +308,7 @@ body {
   width: 600px;
   height: 600px;
   max-width: 120vw;
-  background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(59,130,246,0) 70%);
+  background: radial-gradient(circle, rgba(251,191,36,0.12) 0%, rgba(251,191,36,0) 70%);
   pointer-events: none;
 }
 .land-hero-content { position: relative; z-index: 1; max-width: 640px; }
@@ -314,7 +316,7 @@ body {
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.35em;
-  color: #3B82F6;
+  color: #FBBF24;
   margin: 0 0 1.5rem;
 }
 .land-hero-title {
@@ -339,7 +341,7 @@ body {
   transform: translateX(-50%);
   width: 2px;
   height: 40px;
-  background: linear-gradient(to bottom, rgba(59,130,246,0.5), transparent);
+  background: linear-gradient(to bottom, rgba(251,191,36,0.5), transparent);
   animation: land-bounce 2s ease-in-out infinite;
 }
 @keyframes land-bounce {
@@ -357,16 +359,16 @@ body {
   font-weight: 500;
   font-family: inherit;
   color: #F8FAFC;
-  background: rgba(59,130,246,0.12);
-  border: 1px solid rgba(59,130,246,0.4);
+  background: rgba(251,191,36,0.12);
+  border: 1px solid rgba(251,191,36,0.4);
   border-radius: 9999px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .land-btn-primary:hover {
-  background: rgba(59,130,246,0.22);
-  border-color: rgba(59,130,246,0.7);
-  box-shadow: 0 0 24px rgba(59,130,246,0.25);
+  background: rgba(251,191,36,0.22);
+  border-color: rgba(251,191,36,0.7);
+  box-shadow: 0 0 24px rgba(251,191,36,0.25);
 }
 .land-btn-primary:active { transform: scale(0.97); }
 .land-btn-primary--lg { padding: 1.1rem 2.5rem; font-size: 1.1rem; }
@@ -413,7 +415,7 @@ body {
   border-radius: 36px;
   padding: 8px;
   position: relative;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(59,130,246,0.08);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(251,191,36,0.08);
 }
 .land-phone-notch {
   position: absolute;
@@ -504,9 +506,9 @@ body {
   cursor: default;
 }
 .land-phone-veto-btn--confirm {
-  background: rgba(59,130,246,0.2);
-  color: #93C5FD;
-  border: 1px solid rgba(59,130,246,0.35);
+  background: rgba(251,191,36,0.2);
+  color: #FCD34D;
+  border: 1px solid rgba(251,191,36,0.35);
 }
 .land-phone-veto-btn--dismiss {
   background: rgba(255,255,255,0.05);
@@ -534,8 +536,8 @@ body {
   transition: all 0.3s ease;
 }
 .land-pillar-card:hover {
-  background: rgba(59,130,246,0.05);
-  border-color: rgba(59,130,246,0.2);
+  background: rgba(251,191,36,0.05);
+  border-color: rgba(251,191,36,0.2);
   transform: translateY(-4px);
 }
 .land-pillar-icon {
@@ -544,10 +546,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.2);
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.2);
   border-radius: 12px;
-  color: #60A5FA;
+  color: #FCD34D;
   margin-bottom: 1.25rem;
 }
 .land-pillar-title {
@@ -579,7 +581,7 @@ body {
 .land-testimony-mark {
   font-size: 4rem;
   font-weight: 700;
-  color: rgba(59,130,246,0.2);
+  color: rgba(251,191,36,0.2);
   line-height: 1;
   margin-bottom: 0.5rem;
 }
@@ -601,7 +603,7 @@ body {
 .land-cta {
   text-align: center;
   padding: 6rem 1.5rem;
-  background: radial-gradient(ellipse at 50% 80%, rgba(59,130,246,0.08) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 80%, rgba(251,191,36,0.08) 0%, transparent 60%);
 }
 .land-cta-title {
   font-size: clamp(1.4rem, 3.5vw, 2rem);
@@ -637,7 +639,7 @@ body {
   text-decoration: none;
   transition: color 0.2s ease;
 }
-.land-footer-link:hover { color: #60A5FA; }
+.land-footer-link:hover { color: #FCD34D; }
 .land-footer-tag {
   font-size: 0.85rem;
   font-weight: 300;

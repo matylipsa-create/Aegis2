@@ -70,13 +70,13 @@ export default function Dashboard({ isTechnical, onArm, onPanic }: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl p-3" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
+        <div className="rounded-xl p-3" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
           <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: '#6B7280' }}>Confianza</div>
           <div className="text-xl font-bold font-mono" style={{ color: state.confidence > 80 ? '#22C55E' : state.confidence > 60 ? '#FBBF24' : '#EF4444' }}>
             {state.confidence}%
           </div>
         </div>
-        <div className="rounded-xl p-3" style={{ background: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)' }}>
+        <div className="rounded-xl p-3" style={{ background: 'rgba(26,42,58,0.15)', border: '1px solid rgba(26,42,58,0.4)' }}>
           <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: '#6B7280' }}>Carga Cognitiva</div>
           <div className="text-xl font-bold font-mono" style={{ color: state.cognitiveLoad > 70 ? '#EF4444' : state.cognitiveLoad > 50 ? '#FBBF24' : '#22C55E' }}>
             {state.cognitiveLoad}%
@@ -120,12 +120,12 @@ export default function Dashboard({ isTechnical, onArm, onPanic }: Props) {
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
-              <Activity size={12} style={{ color: '#3B82F6' }} />
+              <Activity size={12} style={{ color: '#FBBF24' }} />
               <span className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Eventos en Tiempo Real</span>
             </div>
             <div className="flex items-center gap-1">
-              <Send size={10} style={{ color: '#3B82F6' }} />
-              <span className="text-[10px] font-mono" style={{ color: '#3B82F6' }}>TG: {state.telegramSentCount}</span>
+              <Send size={10} style={{ color: '#FBBF24' }} />
+              <span className="text-[10px] font-mono" style={{ color: '#FBBF24' }}>TG: {state.telegramSentCount}</span>
             </div>
           </div>
           <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -138,7 +138,7 @@ export default function Dashboard({ isTechnical, onArm, onPanic }: Props) {
                   <Radio size={12} style={{ color: e.type.includes('BREACH') || e.type.includes('OFFLINE') ? '#EF4444' : '#FBBF24' }} />
                   <span className="text-xs font-mono" style={{ color: '#9CA3AF' }}>{e.type}</span>
                   {e.telegramSent && (
-                    <span className="text-[8px] px-1 py-0.5 rounded-full" style={{ background: 'rgba(59,130,246,0.15)', color: '#60A5FA' }}>
+                    <span className="text-[8px] px-1 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: '#FCD34D' }}>
                       TG
                     </span>
                   )}

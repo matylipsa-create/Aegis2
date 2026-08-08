@@ -25,7 +25,7 @@ export default function TopBar({ onToggleMode, onOpenSettings, onOpenMetrics }: 
       style={{ background: 'rgba(10,12,26,0.95)', borderBottom: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', height: 52 }}>
       <button onClick={onOpenMetrics} className="flex items-center gap-2 active:scale-95 transition-all">
         <div className="relative">
-          <Shield size={22} style={{ color: '#3B82F6', filter: 'drop-shadow(0 0 6px rgba(59,130,246,0.5))' }} />
+          <Shield size={22} style={{ color: '#FBBF24', filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }} />
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full" style={{
             background: alert.color,
             boxShadow: `0 0 6px ${alert.color}`,
@@ -50,10 +50,10 @@ export default function TopBar({ onToggleMode, onOpenSettings, onOpenMetrics }: 
         <button onClick={onToggleMode}
           className="flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all active:scale-95"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: isTechnical ? '#3B82F6' : '#9CA3AF' }}>
+          <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: isTechnical ? '#FBBF24' : '#9CA3AF' }}>
             {isTechnical ? 'TECNICO' : 'NORMAL'}
           </span>
-          {isTechnical ? <ChevronUp size={12} style={{ color: '#3B82F6' }} /> : <ChevronDown size={12} style={{ color: '#9CA3AF' }} />}
+          {isTechnical ? <ChevronUp size={12} style={{ color: '#FBBF24' }} /> : <ChevronDown size={12} style={{ color: '#9CA3AF' }} />}
         </button>
 
         <button onClick={onOpenSettings}
