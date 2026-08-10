@@ -1,15 +1,17 @@
 import { useEffect, useRef } from 'react';
 import {
-  WifiOff,
   ShieldCheck,
   FileLock2,
-  Layers,
-  BrainCircuit,
+  Accessibility,
+  WifiOff,
   ArrowRight,
   Github,
   Instagram,
   Youtube,
   ExternalLink,
+  Hand,
+  ScrollText,
+  HardDrive,
 } from 'lucide-react';
 
 interface LandingProps {
@@ -18,30 +20,31 @@ interface LandingProps {
 
 const PILLARS = [
   {
-    icon: WifiOff,
-    title: 'Offline-First',
-    text: 'Funciona sin internet. Estás protegido aunque no haya señal.',
-  },
-  {
-    icon: ShieldCheck,
+    icon: Hand,
     title: 'Veto Humano',
-    text: 'La IA sugiere, vos decidís. Nunca al revés.',
+    text: 'La IA sugiere, vos decidís.',
   },
   {
-    icon: FileLock2,
-    title: 'Evidencia Inmutable',
+    icon: ScrollText,
+    title: 'Evidencia Estructurada',
     text: 'Cada evento queda registrado y verificable.',
   },
   {
-    icon: Layers,
-    title: 'Multi-Modo',
-    text: 'Simple para todos. Potente para los que necesitan más.',
+    icon: HardDrive,
+    title: 'Soberanía del Dato',
+    text: 'Tus datos no salen de tu dispositivo.',
   },
   {
-    icon: BrainCircuit,
-    title: 'Percepción',
-    text: 'Aegis no solo alerta. Analiza, interpreta y te ayuda a decidir.',
+    icon: Accessibility,
+    title: 'Accesibilidad',
+    text: 'Diseñado para cualquier persona, en cualquier dispositivo.',
   },
+];
+
+const SOLUTION_PILLARS = [
+  { icon: WifiOff, label: 'Offline-first' },
+  { icon: HardDrive, label: 'Procesamiento local' },
+  { icon: Hand, label: 'Veto humano' },
 ];
 
 const SOCIAL_LINKS = [
@@ -82,7 +85,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
             La IA sugiere,<br />el humano decide.
           </h1>
           <p className="land-hero-sub">
-            Aegis es un sistema que te devuelve el control. No reemplaza tu juicio, lo amplifica.
+            Aegis es un sistema soberano de seguridad y asistencia. No reemplaza tu juicio, lo amplifica.
           </p>
           <button onClick={onEnterApp} className="land-btn-primary">
             Conocé Aegis
@@ -92,52 +95,33 @@ export default function Landing({ onEnterApp }: LandingProps) {
         <div className="land-hero-scroll-hint" aria-hidden="true" />
       </section>
 
-      {/* ===== QUÉ ES AEGIS ===== */}
-      <section ref={whatRef} className="land-what land-reveal">
-        <div className="land-what-text">
-          <h2 className="land-section-title">Qué es Aegis</h2>
-          <p className="land-what-body">
-            Aegis nació para que la tecnología te asista sin reemplazarte. Para que tengas
-            evidencia cuando la necesites, y control cuando más importa. No es una alarma.
-            Es una herramienta de confianza.
+      {/* ===== PROBLEMA ===== */}
+      <section className="land-problem land-reveal">
+        <div className="land-problem-inner">
+          <p className="land-section-eyebrow">El problema</p>
+          <p className="land-problem-text">
+            La mayoría de los sistemas de seguridad dependen de la nube, exponen tus datos y toman decisiones por vos.
           </p>
         </div>
-        <div className="land-what-visual">
-          <div className="land-phone-mock">
-            <div className="land-phone-notch" />
-            <div className="land-phone-screen">
-              <div className="land-phone-statusbar">
-                <span>AEGIS</span>
-                <span className="land-phone-dot land-phone-dot--safe" />
-              </div>
-              <div className="land-phone-body">
-                <div className="land-phone-card land-phone-card--accent">
-                  <BrainCircuit size={20} />
-                  <div>
-                    <p className="land-phone-card-title">Patrón ambiguo</p>
-                    <p className="land-phone-card-sub">Confianza 63% — Requiere revisión</p>
-                  </div>
+      </section>
+
+      {/* ===== SOLUCIÓN ===== */}
+      <section className="land-solution land-reveal">
+        <div className="land-solution-inner">
+          <p className="land-section-eyebrow">La solución</p>
+          <p className="land-solution-text">
+            Aegis es offline-first, procesa todo en tu dispositivo, y pone el veto humano en el centro de cada decisión.
+          </p>
+          <div className="land-solution-pills">
+            {SOLUTION_PILLARS.map((p) => {
+              const Icon = p.icon;
+              return (
+                <div key={p.label} className="land-solution-pill">
+                  <Icon size={18} strokeWidth={1.6} />
+                  <span>{p.label}</span>
                 </div>
-                <div className="land-phone-card">
-                  <ShieldCheck size={20} />
-                  <div>
-                    <p className="land-phone-card-title">Veto humano</p>
-                    <p className="land-phone-card-sub">Confirmar o descartar</p>
-                  </div>
-                </div>
-                <div className="land-phone-card">
-                  <FileLock2 size={20} />
-                  <div>
-                    <p className="land-phone-card-title">Evidencia</p>
-                    <p className="land-phone-card-sub">Hash verificado · 09:41</p>
-                  </div>
-                </div>
-                <div className="land-phone-veto-row">
-                  <button className="land-phone-veto-btn land-phone-veto-btn--confirm">Confirmar</button>
-                  <button className="land-phone-veto-btn land-phone-veto-btn--dismiss">Descartar</button>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -158,17 +142,6 @@ export default function Landing({ onEnterApp }: LandingProps) {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      {/* ===== TESTIMONIO ===== */}
-      <section className="land-testimony land-reveal">
-        <div className="land-testimony-card">
-          <div className="land-testimony-mark">"</div>
-          <p className="land-testimony-text">
-            Lo que más valoro es que Aegis me devuelve la tranquilidad. No me vigila, me acompaña.
-          </p>
-          <p className="land-testimony-author">— Beta tester</p>
         </div>
       </section>
 
