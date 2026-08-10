@@ -32,8 +32,8 @@ SENTRA v2.0 is an elite Emergency Response PWA featuring a dark tactical cyberpu
 - **Target:** Progressive Web App (PWA) + Android APK
 
 ### Backend Integration
-- **Primary Dispatch:** Pipedream Webhook (`https://eovz6sc6j9exly6.m.pipedream.net`)
-- **Fallback Channel:** Telegram Bot API (`bot8156157833:AAEn86wHwB4w-bYjT0-wV15hV74P8qL2m90`)
+- **Primary Dispatch:** Pipedream Webhook (`<PIPEDREAM_WEBHOOK_URL>`)
+- **Fallback Channel:** Telegram Bot API (`<TELEGRAM_BOT_TOKEN>`)
 - **Data Persistence:** Supabase (optional cloud sync)
 
 ### Hardware APIs
@@ -178,9 +178,9 @@ SECURE ──[ACTION pressed]──> SAFE_LOCK (3-second countdown)
 
 ### Endpoints
 ```typescript
-const PIPEDREAM_WEBHOOK = 'https://eovz6sc6j9exly6.m.pipedream.net';
-const TELEGRAM_BOT_TOKEN = '8156157833:AAEn86wHwB4w-bYjT0-wV15hV74P8qL2m90';
-const TELEGRAM_CHAT_ID = '-1002485591325';
+const PIPEDREAM_WEBHOOK = '<PIPEDREAM_WEBHOOK_URL>';
+const TELEGRAM_BOT_TOKEN = '<TELEGRAM_BOT_TOKEN>';
+const TELEGRAM_CHAT_ID = '<TELEGRAM_CHAT_ID>';
 const TELEGRAM_SEND_PHOTO_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
 ```
 

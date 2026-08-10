@@ -174,11 +174,11 @@ dist/
 
 ```typescript
 // Pipedream Primary
-✅ https://eovz6sc6j9exly6.m.pipedream.net
+✅ <PIPEDREAM_WEBHOOK_URL>
 
 // Telegram Fallback
-✅ Bot Token: 8156157833:AAEn86wHwB4w-bYjT0-wV15hV74P8qL2m90
-✅ Chat ID: -1002485591325
+✅ Bot Token: <TELEGRAM_BOT_TOKEN>
+✅ Chat ID: <TELEGRAM_CHAT_ID>
 ✅ Telegram API: https://api.telegram.org/bot[TOKEN]/sendPhoto
 
 // Operator Identity

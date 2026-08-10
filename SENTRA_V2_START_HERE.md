@@ -143,7 +143,7 @@ Prevents duplicate triggers during panic:
 
 ### 3. 📡 Dual-Channel Dispatch
 Never fails, works offline:
-- **Primary:** Pipedream webhook (`https://eovz6sc6j9exly6.m.pipedream.net`)
+- **Primary:** Pipedream webhook (`<PIPEDREAM_WEBHOOK_URL>`)
 - **Fallback:** Telegram Bot API (hardcoded)
 - **Guarantee:** 100% delivery rate
 
@@ -233,11 +233,11 @@ All critical endpoints are hardcoded for offline resilience:
 
 ```typescript
 // Pipedream Primary Endpoint
-PIPEDREAM_WEBHOOK = 'https://eovz6sc6j9exly6.m.pipedream.net'
+PIPEDREAM_WEBHOOK = '<PIPEDREAM_WEBHOOK_URL>'
 
 // Telegram Fallback
-TELEGRAM_BOT_TOKEN = '8156157833:AAEn86wHwB4w-bYjT0-wV15hV74P8qL2m90'
-TELEGRAM_CHAT_ID = '-1002485591325'
+TELEGRAM_BOT_TOKEN = '<TELEGRAM_BOT_TOKEN>'
+TELEGRAM_CHAT_ID = '<TELEGRAM_CHAT_ID>'
 
 // Operator Identity
 OPERATOR_NAME = 'Matías'

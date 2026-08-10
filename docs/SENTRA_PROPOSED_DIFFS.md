@@ -85,7 +85,7 @@ Y en `SentraMesh.ts`:
 
 ```diff
 -// Pipedream endpoint — swap for production URL
--const AUDIO_ALERT_ENDPOINT = 'https://eo4xot0qo22mfqm.m.pipedream.net/audio_alert';
+-const AUDIO_ALERT_ENDPOINT = '<PIPEDREAM_AUDIO_ALERT_WEBHOOK_URL>';
 -
 -// ── Dispatch to Pipedream (fire-and-forget) ────────────────────────────────
 -

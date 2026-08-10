@@ -124,11 +124,11 @@ PROJECT_MANIFEST.md             # This file
 ### Hardcoded Configuration (No Environment Variables)
 ```typescript
 // Primary Dispatch
-PIPEDREAM_WEBHOOK = 'https://eovz6sc6j9exly6.m.pipedream.net'
+PIPEDREAM_WEBHOOK = '<PIPEDREAM_WEBHOOK_URL>'
 
 // Fallback Channels
-TELEGRAM_BOT_TOKEN = '8156157833:AAEn86wHwB4w-bYjT0-wV15hV74P8qL2m90'
-TELEGRAM_CHAT_ID = '-1002485591325'
+TELEGRAM_BOT_TOKEN = '<TELEGRAM_BOT_TOKEN>'
+TELEGRAM_CHAT_ID = '<TELEGRAM_CHAT_ID>'
 
 // Operator Identity
 OPERATOR_NAME = 'Matías'

@@ -31,7 +31,7 @@ SENTRA v2.0 is a **high-performance Emergency Response Progressive Web App** bui
 - Animated heart icon synchronized to your pulse
 
 ### 2. Emergency Dispatch Pipeline
-- **Primary:** Pipedream webhook (`https://eovz6sc6j9exly6.m.pipedream.net`)
+- **Primary:** Pipedream webhook (`<PIPEDREAM_WEBHOOK_URL>`)
 - **Fallback:** Telegram Bot API (hardcoded for offline resilience)
 - **Payload:** GPS coordinates + biometrics + camera status
 - **Reliability:** 100% uptime (never drops emergency)
@@ -175,13 +175,13 @@ All critical endpoints are **hardcoded** (no environment variables needed):
 
 ### Pipedream Webhook
 ```typescript
-const PIPEDREAM_WEBHOOK = 'https://eovz6sc6j9exly6.m.pipedream.net';
+const PIPEDREAM_WEBHOOK = '<PIPEDREAM_WEBHOOK_URL>';
 ```
 
 ### Telegram Fallback
 ```typescript
-const TELEGRAM_BOT_TOKEN = '8156157833:AAEn86wHwB4w-bYjT0-wV15hV74P8qL2m90';
-const TELEGRAM_CHAT_ID = '-1002485591325';
+const TELEGRAM_BOT_TOKEN = '<TELEGRAM_BOT_TOKEN>';
+const TELEGRAM_CHAT_ID = '<TELEGRAM_CHAT_ID>';
 const TELEGRAM_SEND_PHOTO_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
 ```
 
@@ -385,7 +385,7 @@ On completion: Return to SECURE state
 
 ### Pipedream Webhook Format
 ```bash
-POST https://eovz6sc6j9exly6.m.pipedream.net
+POST <PIPEDREAM_WEBHOOK_URL>
 Content-Type: application/json
 
 {
@@ -406,7 +406,7 @@ Content-Type: application/json
 POST https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto
 Content-Type: multipart/form-data
 
-chat_id=-1002485591325
+chat_id=<TELEGRAM_CHAT_ID>
 photo=https://images.unsplash.com/photo-1557597774-9d273605dfa9
 caption=🚨 EMERGENCIA SENTRA v2.0 🚨\n\nOperador: Matías\nBPM: 87\n...
 ```
