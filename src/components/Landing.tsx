@@ -12,6 +12,8 @@ import {
   Hand,
   ScrollText,
   HardDrive,
+  BrainCircuit,
+  KeyRound,
 } from 'lucide-react';
 
 interface LandingProps {
@@ -35,9 +37,14 @@ const PILLARS = [
     text: 'Tus datos no salen de tu dispositivo.',
   },
   {
-    icon: Accessibility,
-    title: 'Accesibilidad',
-    text: 'Diseñado para cualquier persona, en cualquier dispositivo.',
+    icon: BrainCircuit,
+    title: 'IA Local',
+    text: 'Procesamiento en tiempo real, sin nube.',
+  },
+  {
+    icon: KeyRound,
+    title: 'Post-cuántica',
+    text: 'Dilithium + hash chain para evidencia inmutable.',
   },
 ];
 
@@ -80,7 +87,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
       <section className="land-hero">
         <div className="land-hero-glow" />
         <div className="land-hero-content land-reveal">
-          <p className="land-hero-eyebrow">AEGIS</p>
+          <p className="land-hero-eyebrow">AEGIS · SEGURIDAD SOBERANA</p>
           <h1 className="land-hero-title">
             La IA sugiere,<br />el humano decide.
           </h1>
@@ -88,7 +95,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
             Aegis es un sistema soberano de seguridad y asistencia. No reemplaza tu juicio, lo amplifica.
           </p>
           <button onClick={onEnterApp} className="land-btn-primary">
-            Conocé Aegis
+            Probar la demo
             <ArrowRight size={18} className="land-btn-arrow" />
           </button>
         </div>
@@ -100,7 +107,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
         <div className="land-problem-inner">
           <p className="land-section-eyebrow">El problema</p>
           <p className="land-problem-text">
-            La mayoría de los sistemas de seguridad dependen de la nube, exponen tus datos y toman decisiones por vos.
+            Los sistemas de seguridad actuales dependen de la nube, exponen tus datos y toman decisiones por vos.
           </p>
         </div>
       </section>
@@ -147,7 +154,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
 
       {/* ===== CTA FINAL ===== */}
       <section className="land-cta land-reveal">
-        <h2 className="land-cta-title">Probá Aegis. Sin instalar nada. Sin compromiso.</h2>
+        <h2 className="land-cta-title">Probá Aegis ahora mismo. Sin instalar nada. Sin compromiso.</h2>
         <button onClick={onEnterApp} className="land-btn-primary land-btn-primary--lg">
           Probar la demo
           <ArrowRight size={18} className="land-btn-arrow" />
