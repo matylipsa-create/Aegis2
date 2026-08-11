@@ -36,7 +36,6 @@ export default function Operations() {
             style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)', color: '#FBBF24' }}>
             <Download size={13} /> Descargar JSON
           </button>
-        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
