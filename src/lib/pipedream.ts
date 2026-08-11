@@ -16,6 +16,9 @@ interface DemoEventPayload {
   lat: number;
   lng: number;
   hash: string;
+  previousHash: string;
+  signature: string;
+  cryptoVerified: boolean;
   metadata: Record<string, unknown>;
   demo: boolean;
 }
@@ -32,6 +35,9 @@ export async function sendDemoEvent(event: SecurityEvent, webhookUrl: string): P
     lat: event.lat,
     lng: event.lng,
     hash: event.hash,
+    previousHash: event.previousHash,
+    signature: event.signature,
+    cryptoVerified: event.cryptoVerified,
     metadata: event.metadata,
     demo: true,
   };

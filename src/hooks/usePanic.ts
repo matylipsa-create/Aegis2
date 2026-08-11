@@ -3,15 +3,8 @@ import { useApp } from '../context/AppContext';
 import { sendDemoEvent } from '../lib/pipedream';
 import type { SecurityEvent } from '../types';
 
-function randomHash(): string {
-  const chars = '0123456789abcdef';
-  let h = '';
-  for (let i = 0; i < 64; i++) h += chars[Math.floor(Math.random() * 16)];
-  return h;
-}
-
 export function usePanic() {
-  const { state, addEvent, setAlertLevel, setStatus, incrementTelegramCount, markEventTelegramSent } = useApp();
+  const { state, addEvent, signAndChain, setAlertLevel, setStatus, incrementTelegramCount, markEventTelegramSent } = useApp();
   const [panicActive, setPanicActive] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
@@ -48,13 +41,12 @@ export function usePanic() {
     const lat = state.sensors.gpsLat ?? -34.6037;
     const lng = state.sensors.gpsLng ?? -58.3816;
 
-    const event: SecurityEvent = {
+    const baseEvent = {
       id: `panic-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       type: 'PANIC_ALERT',
       timestamp: Date.now(),
       lat,
       lng,
-      hash: randomHash(),
       metadata: {
         source: state.settings.realMode ? 'real-panic' : 'demo-panic',
         trigger: 'manual',
@@ -62,7 +54,13 @@ export function usePanic() {
       },
       demo: !state.settings.realMode,
     };
+
+    const event: SecurityEvent = await signAndChain(baseEvent);
     addEvent(event);
+
+    if (!event.cryptoVerified) {
+      setAlertLevel('CRITICO');
+    }
 
     if (state.settings.sendDemoToTelegram && state.settings.pipedreamWebhookUrl) {
       const ok = await sendDemoEvent(event, state.settings.pipedreamWebhookUrl);
@@ -73,7 +71,7 @@ export function usePanic() {
     }
 
     setTimeout(() => setPanicActive(false), 3000);
-  }, [state.settings, state.sensors, addEvent, setAlertLevel, setStatus, incrementTelegramCount, markEventTelegramSent]);
+  }, [state.settings, state.sensors, addEvent, signAndChain, setAlertLevel, setStatus, incrementTelegramCount, markEventTelegramSent]);
 
   return { panicActive, triggerPanic };
 }

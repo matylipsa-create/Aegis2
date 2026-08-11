@@ -36,21 +36,13 @@ function pickWeighted(excludeType?: string): string {
   return pool[0].type;
 }
 
-function randomHash(): string {
-  const chars = '0123456789abcdef';
-  let h = '';
-  for (let i = 0; i < 64; i++) h += chars[Math.floor(Math.random() * 16)];
-  return h;
-}
-
 export function useDemoEventGenerator() {
-  const { state, addEvent, incrementTelegramCount, markEventTelegramSent, setAlertLevel, setConfidence, setCognitiveLoad } = useApp();
+  const { state, addEvent, signAndChain, incrementTelegramCount, markEventTelegramSent, setAlertLevel, setConfidence, setCognitiveLoad } = useApp();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const settingsRef = useRef(state.settings);
   settingsRef.current = state.settings;
   const lastTypeRef = useRef<string | undefined>(undefined);
   const lastAnchorRef = useRef<number>(0);
-  const recentHashesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!state.demoMode) return;
@@ -70,22 +62,13 @@ export function useDemoEventGenerator() {
 
       const coord = COORDS[Math.floor(Math.random() * COORDS.length)];
       const jitter = () => (Math.random() - 0.5) * 0.005;
-      const hash = randomHash();
 
-      if (recentHashesRef.current.has(hash)) return;
-      recentHashesRef.current.add(hash);
-      if (recentHashesRef.current.size > 20) {
-        const first = recentHashesRef.current.values().next().value;
-        if (first) recentHashesRef.current.delete(first);
-      }
-
-      const event: SecurityEvent = {
+      const baseEvent = {
         id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         type: chosenType,
         timestamp: Date.now(),
         lat: coord.lat + jitter(),
         lng: coord.lng + jitter(),
-        hash,
         metadata: {
           source: 'demo-generator',
           confidence: Math.floor(Math.random() * 30 + 70),
@@ -93,9 +76,13 @@ export function useDemoEventGenerator() {
         },
         demo: true,
       };
+
+      const event: SecurityEvent = await signAndChain(baseEvent);
       addEvent(event);
 
-      if (chosenType === 'PERIMETER_BREACH' || chosenType === 'CAMERA_OFFLINE') {
+      if (!event.cryptoVerified) {
+        setAlertLevel('CRITICO');
+      } else if (chosenType === 'PERIMETER_BREACH' || chosenType === 'CAMERA_OFFLINE') {
         setAlertLevel('CRITICO');
         setConfidence(Math.floor(Math.random() * 20 + 60));
       } else if (chosenType === 'MOTION_DETECTED' || chosenType === 'AUDIO_ANOMALY') {
@@ -114,7 +101,7 @@ export function useDemoEventGenerator() {
           markEventTelegramSent(event.id);
         }
       } else if (settingsRef.current.sendDemoToTelegram && !settingsRef.current.pipedreamWebhookUrl) {
-        console.log(`[AEGIS] Evento demo generado (sin webhook): type=${chosenType} hash=${hash.slice(0, 12)}...`);
+        console.log(`[AEGIS] Evento demo generado (sin webhook): type=${chosenType} hash=${event.hash.slice(0, 12)}...`);
       }
     };
 
@@ -123,5 +110,5 @@ export function useDemoEventGenerator() {
     tick();
 
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [state.demoMode, state.settings.powerSavingMode, addEvent, incrementTelegramCount, markEventTelegramSent, setAlertLevel, setConfidence, setCognitiveLoad]);
+  }, [state.demoMode, state.settings.powerSavingMode, addEvent, signAndChain, incrementTelegramCount, markEventTelegramSent, setAlertLevel, setConfidence, setCognitiveLoad]);
 }

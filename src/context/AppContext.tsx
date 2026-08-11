@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from 'react';
 import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, SensorState, PageKey } from '../types';
+import { getGenesisHash, initDilithium, signAndChain as cryptoSignAndChain, type CryptoResult } from '../lib/crypto';
 
 const DEMO_KEY = 'aegis-demo-mode';
 const SETTINGS_KEY = 'aegis-settings';
@@ -108,6 +109,7 @@ interface AppContextValue {
   setStatus: (s: SystemStatus) => void;
   setAlertLevel: (a: AlertLevel) => void;
   addEvent: (e: SecurityEvent) => void;
+  signAndChain: (event: Omit<SecurityEvent, 'hash' | 'previousHash' | 'signature' | 'cryptoVerified' | 'telegramSent'>) => Promise<SecurityEvent>;
   updateModule: (key: string, patch: Partial<Pick<ModuleState, 'active' | 'loaded'>>) => void;
   updateCamera: (id: string, patch: Partial<Pick<CameraState, 'status'>>) => void;
   updateSettings: (s: Partial<AppSettings>) => void;
@@ -131,6 +133,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     modules: buildModules(initialState.mode, loadSettings().powerSavingMode),
   }));
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard');
+  const lastHashRef = useRef<string>(getGenesisHash());
+
+  useEffect(() => { initDilithium(); }, []);
 
   const setMode = useCallback((mode: AppMode) => setState(s => ({
     ...s,
@@ -145,10 +150,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setDemoMode = useCallback((demoMode: boolean) => setState(s => ({ ...s, demoMode })), []);
   const setSensors = useCallback((patch: Partial<SensorState>) => setState(s => ({ ...s, sensors: { ...s.sensors, ...patch } })), []);
 
-  const addEvent = useCallback((e: SecurityEvent) => setState(s => ({
-    ...s,
-    events: [e, ...s.events].slice(0, 50),
-  })), []);
+  const addEvent = useCallback((e: SecurityEvent) => setState(s => {
+    lastHashRef.current = e.hash;
+    return { ...s, events: [e, ...s.events].slice(0, 50) };
+  }), []);
+
+  const signAndChain = useCallback(async (
+    event: Omit<SecurityEvent, 'hash' | 'previousHash' | 'signature' | 'cryptoVerified' | 'telegramSent'>,
+  ): Promise<SecurityEvent> => {
+    const previousHash = lastHashRef.current || getGenesisHash();
+    const result: CryptoResult = await cryptoSignAndChain(event, previousHash);
+    return {
+      ...event,
+      hash: result.hash,
+      previousHash: result.previousHash,
+      signature: result.signature,
+      cryptoVerified: result.cryptoVerified,
+    };
+  }, []);
 
   const updateModule = useCallback((key: string, patch: Partial<{ active: boolean; loaded: boolean }>) =>
     setState(s => ({ ...s, modules: s.modules.map(m => m.key === key ? { ...m, ...patch } : m) })), []);
@@ -183,7 +202,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      state, setMode, setStatus, setAlertLevel, addEvent, updateModule,
+      state, setMode, setStatus, setAlertLevel, addEvent, signAndChain, updateModule,
       updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad, setDemoMode, setSensors,
       currentPage, setCurrentPage, isWorkerActive,
     }}>
@@ -198,4 +217,4 @@ export function useApp() {
   return ctx;
 }
 
-export { DEMO_KEY };
+export { DEMO_KEY, getGenesisHash };

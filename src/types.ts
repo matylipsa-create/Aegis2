@@ -9,6 +9,9 @@ export interface SecurityEvent {
   lat: number;
   lng: number;
   hash: string;
+  previousHash: string;
+  signature: string;
+  cryptoVerified: boolean;
   metadata: Record<string, unknown>;
   demo: boolean;
   telegramSent?: boolean;

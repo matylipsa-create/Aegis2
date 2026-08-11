@@ -1,4 +1,4 @@
-import { Camera, Wifi, Crosshair, Eye, ShieldCheck, TriangleAlert as AlertTriangle, Zap, Activity, Radio, Send, BatteryLow, Mic } from 'lucide-react';
+import { Camera, Wifi, Crosshair, Eye, ShieldCheck, TriangleAlert as AlertTriangle, Zap, Activity, Radio, Send, BatteryLow, Mic, KeyRound } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EmergencyCallButtons from '../components/EmergencyCallButtons';
 import CameraStream from '../components/CameraStream';
@@ -187,15 +187,21 @@ export default function Dashboard({ isTechnical, onArm }: Props) {
                 <div className="flex items-center gap-2">
                   <Radio size={12} style={{ color: e.type.includes('BREACH') || e.type.includes('OFFLINE') || e.type.includes('PANIC') ? '#EF4444' : '#FBBF24' }} />
                   <span className="text-xs font-mono" style={{ color: '#9CA3AF' }}>{e.type}</span>
+                  {e.cryptoVerified && (
+                    <KeyRound size={10} style={{ color: '#22C55E' }} />
+                  )}
                   {e.telegramSent && (
                     <span className="text-[8px] px-1 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: '#FCD34D' }}>
                       TG
                     </span>
                   )}
                 </div>
-                <span className="text-[9px] font-mono" style={{ color: '#4B5563' }}>
-                  {new Date(e.timestamp).toLocaleTimeString('es-AR')}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[8px] font-mono truncate max-w-[60px]" style={{ color: '#4B5563' }}>{e.hash.slice(0, 12)}</span>
+                  <span className="text-[9px] font-mono" style={{ color: '#4B5563' }}>
+                    {new Date(e.timestamp).toLocaleTimeString('es-AR')}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
