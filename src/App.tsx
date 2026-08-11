@@ -21,7 +21,7 @@ function AppShell() {
   const { state, setMode, setCurrentPage, setDemoMode } = useApp();
   useDemoEventGenerator();
   useMetricsUpdater();
-  useRealModeSensors();
+  const { setVideo } = useRealModeSensors();
 
   const [showLanding, setShowLanding] = useState(true);
   const [page, setPage] = useState('dashboard');
@@ -76,7 +76,7 @@ function AppShell() {
 
       <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-24"
         style={{ paddingTop, WebkitOverflowScrolling: 'touch' }}>
-        {page === 'dashboard' && <Dashboard isTechnical={state.mode === 'technical'} onArm={handleArm} />}
+        {page === 'dashboard' && <Dashboard isTechnical={state.mode === 'technical'} onArm={handleArm} setVideo={setVideo} />}
         {page === 'regulation' && <Regulation />}
         {page === 'operations' && <Operations />}
       </main>

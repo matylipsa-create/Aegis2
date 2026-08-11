@@ -2,9 +2,9 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Camera, CameraOff, RefreshCw, Maximize2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-export default function CameraStream() {
+export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoElement | null) => void }) {
   const { state, setSensors } = useApp();
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [facing, setFacing] = useState<'environment' | 'user'>('environment');
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +89,10 @@ export default function CameraStream() {
     <div className="rounded-xl overflow-hidden" style={{ background: '#000', border: '1px solid rgba(251,191,36,0.3)' }}>
       <div className="relative aspect-video bg-black">
         <video
-          ref={videoRef}
+          ref={(el) => {
+            videoRef.current = el;
+            setVideo?.(el);
+          }}
           autoPlay
           playsInline
           muted

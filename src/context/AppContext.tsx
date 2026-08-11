@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from 'react';
-import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, SensorState, PageKey } from '../types';
+import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, SensorState, PageKey, DetectedObject, AudioAlert } from '../types';
 import { getGenesisHash, initDilithium, signAndChain as cryptoSignAndChain, type CryptoResult } from '../lib/crypto';
 
 const DEMO_KEY = 'aegis-demo-mode';
@@ -99,6 +99,10 @@ const initialState: AppState = {
   telegramSentCount: 0,
   demoMode: false,
   sensors: initialSensors,
+  detectedObjects: [],
+  audioAlerts: [],
+  tfjsLoaded: false,
+  tfjsError: false,
 };
 
 export type CameraStateStatus = 'active' | 'fail' | 'connecting' | 'standby' | 'unavailable';
@@ -119,6 +123,9 @@ interface AppContextValue {
   setCognitiveLoad: (n: number) => void;
   setDemoMode: (v: boolean) => void;
   setSensors: (patch: Partial<SensorState>) => void;
+  setDetectedObjects: (objects: DetectedObject[]) => void;
+  addAudioAlert: (alert: AudioAlert) => void;
+  setTfjsStatus: (loaded: boolean, error: boolean) => void;
   currentPage: PageKey;
   setCurrentPage: (p: PageKey) => void;
   isWorkerActive: (workerType: 'ia' | 'vision') => boolean;
@@ -149,6 +156,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setCognitiveLoad = useCallback((cognitiveLoad: number) => setState(s => ({ ...s, cognitiveLoad })), []);
   const setDemoMode = useCallback((demoMode: boolean) => setState(s => ({ ...s, demoMode })), []);
   const setSensors = useCallback((patch: Partial<SensorState>) => setState(s => ({ ...s, sensors: { ...s.sensors, ...patch } })), []);
+  const setDetectedObjects = useCallback((detectedObjects: DetectedObject[]) => setState(s => ({ ...s, detectedObjects })), []);
+  const addAudioAlert = useCallback((alert: AudioAlert) => setState(s => ({ ...s, audioAlerts: [alert, ...s.audioAlerts].slice(0, 20) })), []);
+  const setTfjsStatus = useCallback((loaded: boolean, error: boolean) => setState(s => ({ ...s, tfjsLoaded: loaded, tfjsError: error })), []);
 
   const addEvent = useCallback((e: SecurityEvent) => setState(s => {
     lastHashRef.current = e.hash;
@@ -203,7 +213,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{
       state, setMode, setStatus, setAlertLevel, addEvent, signAndChain, updateModule,
-      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad, setDemoMode, setSensors,
+      updateCamera, updateSettings, incrementTelegramCount, markEventTelegramSent, setConfidence, setCognitiveLoad, setDemoMode, setSensors, setDetectedObjects, addAudioAlert, setTfjsStatus,
       currentPage, setCurrentPage, isWorkerActive,
     }}>
       {children}

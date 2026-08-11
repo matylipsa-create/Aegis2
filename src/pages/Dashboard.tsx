@@ -1,9 +1,9 @@
-import { Camera, Wifi, Crosshair, Eye, ShieldCheck, TriangleAlert as AlertTriangle, Zap, Activity, Radio, Send, BatteryLow, Mic, KeyRound } from 'lucide-react';
+import { Camera, Wifi, Crosshair, Eye, ShieldCheck, TriangleAlert as AlertTriangle, Zap, Activity, Radio, Send, BatteryLow, Mic, KeyRound, ScanEye, Volume2, Brain } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import EmergencyCallButtons from '../components/EmergencyCallButtons';
 import CameraStream from '../components/CameraStream';
 import { usePanic } from '../hooks/usePanic';
-import type { CameraState } from '../types';
+import type { CameraState, DetectedObject, AudioAlert } from '../types';
 
 const CAM_ICONS: Record<string, typeof Camera> = {
   CAM: Camera, IP: Wifi, PTZ: Crosshair, VISION: Eye,
@@ -40,9 +40,10 @@ const ALERT_CONFIG = {
 interface Props {
   isTechnical: boolean;
   onArm: () => void;
+  setVideo: (el: HTMLVideoElement | null) => void;
 }
 
-export default function Dashboard({ isTechnical, onArm }: Props) {
+export default function Dashboard({ isTechnical, onArm, setVideo }: Props) {
   const { state, setStatus } = useApp();
   const { panicActive, triggerPanic } = usePanic();
   const AlertIcon = ALERT_CONFIG[state.alertLevel].icon;
@@ -127,7 +128,76 @@ export default function Dashboard({ isTechnical, onArm }: Props) {
         <EmergencyCallButtons variant="103" />
       </div>
 
-      <CameraStream />
+      <CameraStream setVideo={setVideo} />
+
+      {isRealMode && state.tfjsLoaded && state.detectedObjects.length > 0 && (
+        <div className="rounded-xl p-3" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
+          <div className="flex items-center gap-1.5 mb-2">
+            <ScanEye size={12} style={{ color: '#22C55E' }} />
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Objetos Detectados (COCO-SSD)</span>
+            <span className="text-[9px] font-mono ml-auto px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}>
+              {state.detectedObjects.length}
+            </span>
+          </div>
+          <div className="space-y-1">
+            {state.detectedObjects.slice(0, 5).map((obj, i) => (
+              <div key={i} className="flex items-center justify-between py-1 px-2 rounded" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <span className="text-xs font-mono" style={{ color: '#9CA3AF' }}>{obj.class}</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-12 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                    <div className="h-full rounded-full" style={{ width: `${obj.score * 100}%`, background: obj.score > 0.7 ? '#22C55E' : '#FBBF24' }} />
+                  </div>
+                  <span className="text-[9px] font-mono" style={{ color: obj.score > 0.7 ? '#22C55E' : '#FBBF24' }}>
+                    {Math.round(obj.score * 100)}%
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isRealMode && state.tfjsError && (
+        <div className="rounded-xl p-3" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
+          <div className="flex items-center gap-1.5">
+            <Brain size={12} style={{ color: '#EF4444' }} />
+            <span className="text-[10px]" style={{ color: '#EF4444' }}>No se pudo cargar TensorFlow.js</span>
+          </div>
+        </div>
+      )}
+
+      {isRealMode && state.audioAlerts.length > 0 && (
+        <div className="rounded-xl p-3" style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)' }}>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Volume2 size={12} style={{ color: '#FBBF24' }} />
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Alertas de Audio</span>
+            <span className="text-[9px] font-mono ml-auto px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: '#FCD34D' }}>
+              {state.audioAlerts.length}
+            </span>
+          </div>
+          <div className="space-y-1 max-h-32 overflow-y-auto">
+            {state.audioAlerts.slice(0, 5).map(a => (
+              <div key={a.id} className="flex items-center justify-between py-1 px-2 rounded" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="flex items-center gap-1.5">
+                  {a.keyword ? (
+                    <span className="text-[8px] px-1.5 py-0.5 rounded-full font-mono" style={{ background: 'rgba(239,68,68,0.15)', color: '#EF4444' }}>
+                      {a.keyword.toUpperCase()}
+                    </span>
+                  ) : (
+                    <span className="text-[8px] px-1.5 py-0.5 rounded-full font-mono" style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}>
+                      SPIKE
+                    </span>
+                  )}
+                  <span className="text-[9px] font-mono" style={{ color: '#9CA3AF' }}>{a.level}%</span>
+                </div>
+                <span className="text-[9px] font-mono" style={{ color: '#4B5563' }}>
+                  {new Date(a.timestamp).toLocaleTimeString('es-AR')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isRealMode && !isPowerSaving && (
         <div className="rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,191,36,0.2)' }}>

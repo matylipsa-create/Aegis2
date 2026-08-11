@@ -50,6 +50,20 @@ export interface SensorState {
   audioLevel: number;
 }
 
+export interface DetectedObject {
+  class: string;
+  score: number;
+  bbox: [number, number, number, number];
+}
+
+export interface AudioAlert {
+  id: string;
+  timestamp: number;
+  level: number;
+  keyword: string | null;
+  isSpike: boolean;
+}
+
 export type PageKey = 'dashboard' | 'regulation' | 'operations';
 
 export interface AppState {
@@ -65,4 +79,8 @@ export interface AppState {
   telegramSentCount: number;
   demoMode: boolean;
   sensors: SensorState;
+  detectedObjects: DetectedObject[];
+  audioAlerts: AudioAlert[];
+  tfjsLoaded: boolean;
+  tfjsError: boolean;
 }

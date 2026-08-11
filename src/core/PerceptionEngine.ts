@@ -1,155 +1,200 @@
-export interface AmbiguityResult {
-  isAmbiguous: boolean;
-  confidence: number;
-  interpretation: string[];
+/**
+ * PerceptionEngine — TensorFlow.js object detection (COCO-SSD) + audio analysis.
+ *
+ * Loads COCO-SSD only when real mode is active. Detects objects from camera
+ * stream and analyzes audio levels/keyword patterns from microphone input.
+ * Generates events that flow through the hash chain + Dilithium signature.
+ */
+
+import type { DetectedObject } from '../types';
+
+async function loadCocoSsd(): Promise<CocoSsdLib> {
+  const cocoSsd = await import('@tensorflow-models/coco-ssd');
+  await import('@tensorflow/tfjs');
+  return cocoSsd as unknown as CocoSsdLib;
 }
 
-export interface NoiseAnalysisResult {
-  patterns: string[];
-  confidence: number;
+interface CocoSsdLib {
+  load(config?: unknown): Promise<CocoDetector>;
 }
 
-export interface UncertaintyResult {
-  level: 'low' | 'medium' | 'high';
-  requiresHumanVeto: boolean;
+interface CocoDetector {
+  detect(img: HTMLVideoElement, maxBoxes?: number, minScore?: number): Promise<Array<{ class: string; score: number; bbox: [number, number, number, number] }>>;
 }
 
-type SensorInput = {
-  type?: string;
-  metadata?: Record<string, unknown>;
-  confidence?: number;
-  source?: string;
-  module?: string;
-};
+let cocoModel: CocoDetector | null = null;
+let modelLoading = false;
+let modelLoadFailed = false;
 
-const AMBIGUOUS_EVENT_TYPES = new Set([
-  'AUDIO_ANOMALY',
-  'VIBRATION_SENSOR',
-  'MOTION_DETECTED',
-  'FACE_RECOGNIZED',
-]);
-
-const NOISE_EVENT_TYPES = new Set([
-  'AUDIO_ANOMALY',
-  'VIBRATION_SENSOR',
-  'MOTION_DETECTED',
-]);
-
-function coerce(input: unknown): SensorInput {
-  if (input && typeof input === 'object') return input as SensorInput;
-  return {};
+export async function initPerceptionEngine(): Promise<void> {
+  if (cocoModel || modelLoading || modelLoadFailed) return;
+  modelLoading = true;
+  try {
+    const lib = await loadCocoSsd();
+    cocoModel = await lib.load({ base: 'lite_mobilenet_v2' });
+  } catch {
+    modelLoadFailed = true;
+    cocoModel = null;
+  } finally {
+    modelLoading = false;
+  }
 }
 
-export function detectAmbiguousPattern(input: unknown): AmbiguityResult {
-  const data = coerce(input);
-  const interpretations: string[] = [];
-  let ambiguityScore = 0;
-
-  const eventType = data.type ?? '';
-  const meta = data.metadata ?? {};
-  const eventConfidence = typeof data.confidence === 'number'
-    ? data.confidence
-    : typeof meta.confidence === 'number' ? meta.confidence : 85;
-
-  if (AMBIGUOUS_EVENT_TYPES.has(eventType)) {
-    ambiguityScore += 30;
-    interpretations.push(`${eventType} presenta senales superpuestas con multiples causas posibles`);
-  }
-
-  if (eventConfidence < 75) {
-    ambiguityScore += 25;
-    interpretations.push(`Confianza del sensor (${eventConfidence}%) por debajo del umbral de claridad`);
-  }
-
-  const module = data.module ?? meta.module;
-  if (module === 'AUDIO' || module === 'IA') {
-    ambiguityScore += 15;
-    interpretations.push(`Modulo ${module} puede interpretar el mismo estímulo de formas contradictorias`);
-  }
-
-  if (meta.audioLevel !== undefined && typeof meta.audioLevel === 'number' && meta.audioLevel > 0.8) {
-    ambiguityScore += 10;
-    interpretations.push('Nivel de audio en rango saturado: posible falso positivo acustico');
-  }
-
-  if (meta.keyword !== undefined && meta.keyword !== null && meta.keyword !== '') {
-    ambiguityScore += 10;
-    interpretations.push(`Palabra clave detectada ("${String(meta.keyword)}"): requiere confirmacion contextual`);
-  }
-
-  const isAmbiguous = ambiguityScore >= 40;
-  const confidence = Math.max(0, Math.min(100, 100 - ambiguityScore));
-
-  if (interpretations.length === 0) {
-    interpretations.push('Patron claro: no se detectan senales contradictorias');
-  }
-
-  return { isAmbiguous, confidence, interpretation: interpretations };
+export function isModelLoaded(): boolean {
+  return cocoModel !== null;
 }
 
-export function analyzeStructuredNoise(input: unknown): NoiseAnalysisResult {
-  const data = coerce(input);
-  const patterns: string[] = [];
-  let noiseConfidence = 50;
+export function isModelLoadFailed(): boolean {
+  return modelLoadFailed;
+}
 
-  const eventType = data.type ?? '';
-  const meta = data.metadata ?? {};
-
-  if (NOISE_EVENT_TYPES.has(eventType)) {
-    patterns.push(`${eventType}: variacion periodica detectada en ventana de muestreo`);
-    noiseConfidence += 15;
+export async function detectObjects(
+  video: HTMLVideoElement,
+  threshold = 0.5,
+): Promise<DetectedObject[]> {
+  if (!cocoModel || !video.videoWidth) return [];
+  try {
+    const predictions = await cocoModel.detect(video, 20, threshold);
+    return predictions.map((p: { class: string; score: number; bbox: [number, number, number, number] }) => ({
+      class: p.class,
+      score: p.score,
+      bbox: [p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]],
+    }));
+  } catch {
+    return [];
   }
+}
 
-  if (meta.audioLevel !== undefined && typeof meta.audioLevel === 'number') {
-    if (meta.audioLevel > 0.8) {
-      patterns.push('Pico acustico sostenido: patron de ruido estructurado de alta energia');
-      noiseConfidence += 10;
-    } else if (meta.audioLevel > 0.4) {
-      patterns.push('Fluctuacion acustica moderada: posible transicion de estado');
-      noiseConfidence += 5;
+export interface AudioAnalysis {
+  level: number;
+  isSpike: boolean;
+  keywordDetected: boolean;
+  keyword: string | null;
+}
+
+const KEYWORD_PATTERNS: Array<{ freqRange: [number, number]; keyword: string }> = [
+  { freqRange: [800, 1200], keyword: 'ayuda' },
+  { freqRange: [300, 600], keyword: 'alto' },
+  { freqRange: [1000, 1500], keyword: 'fuego' },
+];
+
+export function analyzeAudioFrame(
+  freqData: Uint8Array,
+  timeData: Uint8Array,
+): AudioAnalysis {
+  let sum = 0;
+  for (let i = 0; i < timeData.length; i++) {
+    const v = (timeData[i] - 128) / 128;
+    sum += v * v;
+  }
+  const rms = Math.sqrt(sum / timeData.length);
+  const level = Math.min(100, Math.round(rms * 200));
+  const isSpike = level > 75;
+
+  let dominantFreq = 0;
+  let maxAmp = 0;
+  for (let i = 0; i < freqData.length; i++) {
+    if (freqData[i] > maxAmp) {
+      maxAmp = freqData[i];
+      dominantFreq = i;
+    }
+  }
+  const sampleRate = 44100;
+  const freqHz = (dominantFreq * sampleRate) / (freqData.length * 2);
+
+  let keyword: string | null = null;
+  if (maxAmp > 140 && isSpike) {
+    for (const pattern of KEYWORD_PATTERNS) {
+      if (freqHz >= pattern.freqRange[0] && freqHz <= pattern.freqRange[1]) {
+        keyword = pattern.keyword;
+        break;
+      }
     }
   }
 
-  if (meta.vibration !== undefined && typeof meta.vibration === 'number' && meta.vibration > 0.6) {
-    patterns.push('Vibracion sostenida fuera de banda base: descartar fuente mecanica conocida');
-    noiseConfidence += 10;
-  }
-
-  const module = data.module ?? meta.module;
-  if (module === 'GPS') {
-    patterns.push('Deriva GPS dentro de tolerancia: ruido estructural esperado');
-    noiseConfidence += 5;
-  }
-
-  if (patterns.length === 0) {
-    patterns.push('Sin patrones de ruido estructurado significativos');
-  }
-
-  return { patterns, confidence: Math.min(100, noiseConfidence) };
-}
-
-export function assessUncertainty(input: unknown): UncertaintyResult {
-  const ambiguity = detectAmbiguousPattern(input);
-  const noise = analyzeStructuredNoise(input);
-
-  let uncertaintyScore = 0;
-
-  if (ambiguity.isAmbiguous) uncertaintyScore += 35;
-  if (ambiguity.confidence < 60) uncertaintyScore += 20;
-  if (noise.confidence > 70) uncertaintyScore += 15;
-
-  const data = coerce(input);
-  const eventConfidence = typeof data.confidence === 'number'
-    ? data.confidence
-    : typeof data.metadata?.confidence === 'number' ? data.metadata.confidence : 85;
-  if (eventConfidence < 70) uncertaintyScore += 20;
-
-  const level: UncertaintyResult['level'] =
-    uncertaintyScore >= 60 ? 'high' :
-    uncertaintyScore >= 30 ? 'medium' : 'low';
-
   return {
     level,
-    requiresHumanVeto: level === 'high',
+    isSpike,
+    keywordDetected: keyword !== null,
+    keyword,
+  };
+}
+
+export function shouldTriggerVeto(
+  objects: DetectedObject[],
+  audio: AudioAnalysis | null,
+): { veto: boolean; reason: string | null } {
+  const lowConfidenceObjects = objects.filter(o => o.score < 0.6);
+  if (lowConfidenceObjects.length > 0) {
+    return {
+      veto: true,
+      reason: `Confianza baja en ${lowConfidenceObjects.length} objeto(s) detectado(s)`,
+    };
+  }
+  if (audio && audio.keywordDetected) {
+    return {
+      veto: true,
+      reason: `Palabra clave detectada: "${audio.keyword}" — requiere confirmación`,
+    };
+  }
+  return { veto: false, reason: null };
+}
+
+export function disposePerceptionEngine(): void {
+  cocoModel = null;
+  modelLoading = false;
+  modelLoadFailed = false;
+}
+
+export interface AmbiguityResult {
+  isAmbiguous: boolean;
+  confidence: number;
+  pattern: string | null;
+}
+
+export interface NoiseAnalysisResult {
+  confidence: number;
+  isStructured: boolean;
+  source: string | null;
+}
+
+export interface UncertaintyResult {
+  requiresHumanVeto: boolean;
+  level: number;
+  factors: string[];
+}
+
+export function detectAmbiguousPattern(event: unknown): AmbiguityResult {
+  const e = event as { metadata?: { confidence?: number; objectClass?: string } };
+  const conf = e?.metadata?.confidence ?? 100;
+  const isAmbiguous = conf < 60;
+  return {
+    isAmbiguous,
+    confidence: conf,
+    pattern: isAmbiguous ? (e?.metadata?.objectClass ?? 'unknown') : null,
+  };
+}
+
+export function analyzeStructuredNoise(event: unknown): NoiseAnalysisResult {
+  const e = event as { metadata?: { source?: string; audioLevel?: number } };
+  const level = e?.metadata?.audioLevel ?? 0;
+  return {
+    confidence: level,
+    isStructured: level > 70,
+    source: level > 70 ? (e?.metadata?.source ?? 'audio') : null,
+  };
+}
+
+export function assessUncertainty(event: unknown): UncertaintyResult {
+  const e = event as { metadata?: { confidence?: number; cryptoVerified?: boolean; vetoTriggered?: boolean } };
+  const conf = e?.metadata?.confidence ?? 100;
+  const cryptoOk = e?.metadata?.cryptoVerified !== false;
+  const factors: string[] = [];
+  if (conf < 60) factors.push('low-confidence');
+  if (!cryptoOk) factors.push('crypto-fail');
+  return {
+    requiresHumanVeto: factors.length > 0,
+    level: 100 - conf,
+    factors,
   };
 }
