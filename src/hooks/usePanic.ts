@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { sendDemoEvent } from '../lib/pipedream';
+import { sendEvent } from '../lib/pipedream';
 import type { SecurityEvent } from '../types';
 
 export function usePanic() {
@@ -62,8 +62,8 @@ export function usePanic() {
       setAlertLevel('CRITICO');
     }
 
-    if (state.settings.sendDemoToTelegram && state.settings.pipedreamWebhookUrl) {
-      const ok = await sendDemoEvent(event, state.settings.pipedreamWebhookUrl);
+    if (state.settings.sendDemoToTelegram) {
+      const ok = await sendEvent(event);
       if (ok) {
         incrementTelegramCount();
         markEventTelegramSent(event.id);

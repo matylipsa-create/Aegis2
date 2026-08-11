@@ -2,21 +2,13 @@
 
 > **Escudo y Espada** — Sistema táctico de seguridad soberana, offline-first, con veto humano.
 
-[![Deploy](https://img.shields.io/badge/Vercel-Live-black?logo=vercel)](https://aegis2.vercel.app)
-[![Demo](https://img.shields.io/badge/Bolt-Demo-00E5FF)](https://aegis2.bolt.app)
-
 ## Demo
 
-La aplicación es accesible sin autenticación agregando `?demo=true` a la URL:
+La aplicación es accesible sin autenticación agregando `?demo=true` a la URL. Para diagnóstico completo, agregá `?debug=true`.
 
-- **Vercel**: https://aegis2.vercel.app?demo=true
-- **Bolt**: https://aegis2.bolt.app?demo=true
+Aegis puede ser desplegado en Vercel, Netlify, Bolt, Base44 o cualquier plataforma que soporte PWA.
 
-Para diagnóstico completo, agregá `?debug=true`:
-
-```
-https://aegis2.vercel.app?demo=true&debug=true
-```
+La filosofía de Aegis es la **soberanía sin fronteras**: cada persona y organización debe poder proteger sus datos, operar con autonomía y desplegar la herramienta donde resulte más conveniente, sin quedar atada a un proveedor único.
 
 ## Características
 

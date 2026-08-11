@@ -8,7 +8,6 @@ import {
   Github,
   Instagram,
   Youtube,
-  ExternalLink,
   Hand,
   ScrollText,
   HardDrive,
@@ -56,9 +55,8 @@ const SOLUTION_PILLARS = [
 
 const SOCIAL_LINKS = [
   { label: 'GitHub', href: 'https://github.com/matylipsa-create/Aegis2', icon: Github },
-  { label: 'Vercel', href: 'https://vercel.com', icon: ExternalLink },
-  { label: 'Instagram', href: 'https://instagram.com', icon: Instagram },
-  { label: 'YouTube', href: 'https://youtube.com', icon: Youtube },
+  { label: 'Instagram', href: 'https://www.instagram.com/', icon: Instagram },
+  { label: 'YouTube', href: 'https://www.youtube.com/', icon: Youtube },
 ];
 
 export default function Landing({ onEnterApp }: LandingProps) {

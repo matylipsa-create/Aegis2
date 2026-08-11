@@ -2,9 +2,11 @@ import { BookOpen, FileText, Shield, Scale } from 'lucide-react';
 
 const REGULATIONS = [
   { icon: Shield, title: 'Ley 27.308', desc: 'Marco normativo para sistemas de seguridad privada.' },
-  { icon: FileText, title: 'Resolucion 1234/2020', desc: 'Protocolos de registracion y operacion.' },
-  { icon: Scale, title: 'Ley 25.520', desc: 'Proteccion de datos personales en sistemas de monitoreo.' },
-  { icon: BookOpen, title: 'Guia Empretec', desc: 'Estándares de presentacion para entidades financieras.' },
+  { icon: FileText, title: 'Ley 25.326 y modificatorias', desc: 'Protección de datos personales: tratamiento responsable, finalidad, seguridad y derechos de las personas sobre su información.' },
+  { icon: Scale, title: 'Ley 25.506 de Firma Digital', desc: 'Marco para la validez jurídica de firmas digitales y documentos electrónicos; relevante para la cadena de hash y la firma Dilithium como controles técnicos de integridad y autenticidad.' },
+  { icon: BookOpen, title: 'Marco para IA', desc: 'Aplicación de principios internacionales de IA confiable: supervisión humana, transparencia, trazabilidad, gestión de riesgos, privacidad y revisión continua.' },
+  { icon: FileText, title: 'Resolución 1234/2020', desc: 'Protocolos de registración y operación.' },
+  { icon: BookOpen, title: 'Guía Empretec', desc: 'Estándares de presentación para entidades financieras.' },
 ];
 
 export default function Regulation() {

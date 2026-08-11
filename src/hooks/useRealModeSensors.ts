@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { initPerceptionEngine, detectObjects, analyzeAudioFrame, shouldTriggerVeto, isModelLoaded, isModelLoadFailed } from '../core/PerceptionEngine';
+import { sendEvent } from '../lib/pipedream';
 import type { SecurityEvent } from '../types';
 
 export function useRealModeSensors() {
-  const { state, setSensors, signAndChain, addEvent, setAlertLevel, setDetectedObjects, addAudioAlert, setTfjsStatus, setConfidence } = useApp();
+  const { state, setSensors, signAndChain, addEvent, setAlertLevel, setDetectedObjects, addAudioAlert, setTfjsStatus, setConfidence, incrementTelegramCount, markEventTelegramSent } = useApp();
   const watchIdRef = useRef<number | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const audioStreamRef = useRef<MediaStream | null>(null);
@@ -162,6 +163,10 @@ export function useRealModeSensors() {
         watchIdRef.current = navigator.geolocation.watchPosition(
           (pos) => {
             if (cancelled) return;
+            // Precision filter: discard readings worse than 20 meters
+            if (typeof pos.coords.accuracy === 'number' && pos.coords.accuracy > 20) {
+              return;
+            }
             setSensors({
               gpsActive: true,
               gpsError: null,
@@ -173,7 +178,7 @@ export function useRealModeSensors() {
             if (cancelled) return;
             setSensors({ gpsError: err.message, gpsActive: false });
           },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
         );
       } else {
         setSensors({ gpsError: 'Geolocation no soportado', gpsActive: false });
@@ -202,6 +207,13 @@ export function useRealModeSensors() {
       const event: SecurityEvent = await signAndChain(baseEvent);
       if (cancelled) return;
       addEvent(event);
+      // Dispatch real events to Telegram webhook
+      sendEvent(event).then(ok => {
+        if (ok && !cancelled) {
+          incrementTelegramCount();
+          markEventTelegramSent(event.id);
+        }
+      });
       if (vetoCheck.veto) {
         setAlertLevel('CRITICO');
         setConfidence(40);
@@ -221,7 +233,7 @@ export function useRealModeSensors() {
       if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
       if (detectionRafRef.current !== null) { cancelAnimationFrame(detectionRafRef.current); detectionRafRef.current = null; }
     };
-  }, [realMode, powerSaving, setSensors, signAndChain, addEvent, setAlertLevel, setDetectedObjects, addAudioAlert, setTfjsStatus, setConfidence, state.sensors.gpsLat, state.sensors.gpsLng]);
+  }, [realMode, powerSaving, setSensors, signAndChain, addEvent, setAlertLevel, setDetectedObjects, addAudioAlert, setTfjsStatus, setConfidence, incrementTelegramCount, markEventTelegramSent, state.sensors.gpsLat, state.sensors.gpsLng]);
 
   return { setVideo };
 }

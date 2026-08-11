@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { sendDemoEvent } from '../lib/pipedream';
+import { sendEvent } from '../lib/pipedream';
 import type { SecurityEvent } from '../types';
 
 const EVENT_TYPES = [
@@ -94,14 +94,14 @@ export function useDemoEventGenerator() {
       }
       setCognitiveLoad(Math.floor(Math.random() * 40 + 30));
 
-      if (settingsRef.current.sendDemoToTelegram && settingsRef.current.pipedreamWebhookUrl) {
-        const ok = await sendDemoEvent(event, settingsRef.current.pipedreamWebhookUrl);
+      if (settingsRef.current.sendDemoToTelegram) {
+        const ok = await sendEvent(event);
         if (ok) {
           incrementTelegramCount();
           markEventTelegramSent(event.id);
         }
-      } else if (settingsRef.current.sendDemoToTelegram && !settingsRef.current.pipedreamWebhookUrl) {
-        console.log(`[AEGIS] Evento demo generado (sin webhook): type=${chosenType} hash=${event.hash.slice(0, 12)}...`);
+      } else {
+        console.log(`[AEGIS] Evento demo generado (envío desactivado): type=${chosenType} hash=${event.hash.slice(0, 12)}...`);
       }
     };
 

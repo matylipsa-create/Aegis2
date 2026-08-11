@@ -1,4 +1,4 @@
-import { Activity, Send, Radio, Database, CircleCheck as CheckCircle2, ShieldCheck, ShieldAlert, Link2, KeyRound } from 'lucide-react';
+import { Activity, Send, Radio, Database, CircleCheck as CheckCircle2, ShieldCheck, ShieldAlert, Link2, KeyRound, Download } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function Operations() {
@@ -9,11 +9,34 @@ export default function Operations() {
     return e.previousHash === arr[i + 1].hash;
   });
 
+  const downloadEvidence = () => {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      eventCount: state.events.length,
+      events: state.events,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `aegis-evidencia-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="font-display text-xl font-bold text-white">Operaciones</h1>
-        <p className="text-xs mt-0.5" style={{ color: '#6B7280' }}>Eventos, cola FIFO, firma Dilithium y hash chain</p>
+      <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-xl font-bold text-white">Operaciones</h1>
+            <p className="text-xs mt-0.5" style={{ color: '#6B7280' }}>Eventos, cola FIFO, firma Dilithium y hash chain</p>
+          </div>
+          <button onClick={downloadEvidence} disabled={state.events.length === 0}
+            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)', color: '#FBBF24' }}>
+            <Download size={13} /> Descargar JSON
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2">

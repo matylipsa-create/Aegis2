@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from 'react';
 import type { AppState, AppMode, SystemStatus, AlertLevel, SecurityEvent, AppSettings, ModuleState, CameraState, SensorState, PageKey, DetectedObject, AudioAlert } from '../types';
 import { getGenesisHash, initDilithium, signAndChain as cryptoSignAndChain, type CryptoResult } from '../lib/crypto';
+import { setWebhookUrl } from '../lib/pipedream';
 
 const DEMO_KEY = 'aegis-demo-mode';
 const SETTINGS_KEY = 'aegis-settings';
@@ -186,6 +187,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(s => ({ ...s, cameras: s.cameras.map(c => c.id === id ? { ...c, ...patch } : c) })), []);
 
   const updateSettings = useCallback((patch: Partial<AppSettings>) => setState(s => {
+    if (patch.pipedreamWebhookUrl !== undefined) setWebhookUrl(patch.pipedreamWebhookUrl);
     const settings = { ...s.settings, ...patch };
     saveSettings(settings);
     const modules = patch.powerSavingMode !== undefined
