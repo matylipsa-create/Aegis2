@@ -1,19 +1,5 @@
-import { useEffect, useRef } from 'react';
-import {
-  ShieldCheck,
-  FileLock2,
-  Accessibility,
-  WifiOff,
-  ArrowRight,
-  Github,
-  Instagram,
-  Youtube,
-  Hand,
-  ScrollText,
-  HardDrive,
-  BrainCircuit,
-  KeyRound,
-} from 'lucide-react';
+import { useEffect } from 'react';
+import { WifiOff, ArrowRight, Github, Hand, ScrollText, HardDrive, BrainCircuit, KeyRound, Instagram, Youtube } from 'lucide-react';
 
 interface LandingProps {
   onEnterApp: () => void;
@@ -60,8 +46,6 @@ const SOCIAL_LINKS = [
 ];
 
 export default function Landing({ onEnterApp }: LandingProps) {
-  const whatRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const sections = document.querySelectorAll('.land-reveal');
     const observer = new IntersectionObserver(

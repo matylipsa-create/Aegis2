@@ -1,6 +1,8 @@
-# Aegis 2 — Seguridad Soberana
+# Aegis IV — Seguridad Soberana
 
 > **Escudo y Espada** — Sistema táctico de seguridad soberana, offline-first, con veto humano.
+
+**Versión:** 3.1.1-PROT
 
 ## Demo
 
@@ -54,6 +56,37 @@ Al instalar la PWA, el nombre "Aegis 2" aparece en la pantalla de inicio con el 
 - Firebase (auth, notificaciones)
 - TensorFlow.js (detección de objetos)
 - Tailwind CSS
+
+## Modos de operación
+
+### Modo Normal (operador de campo)
+- Vista simplificada, sin jerga técnica
+- Estado del sistema en lenguaje claro ("Sistema seguro", "Atención requerida", "Alerta crítica")
+- Botones de emergencia grandes y visibles (PÁNICO, 911, 107, 103)
+- Cámara en vivo cuando el modo Real está activo
+- Confirmación de llamada antes de marcar números de emergencia
+
+### Modo Técnico (supervisor)
+- Métricas avanzadas: Confianza (%) y Carga Cognitiva (%)
+- Panel de métricas del sistema (botón Aegis en la barra superior)
+- Estado de módulos: Visión, Audio, GPS, Crypto, IndexedDB, FIFO
+- Eventos en tiempo real con hash, firma Dilithium y timestamp
+- Indicador de cadena de evidencia (intacta/comprometida)
+
+## Sensores en modo Real
+
+Cuando el modo Real está activo desde Configuración:
+- **Cámara**: feed en vivo con detección de objetos (COCO-SSD de TensorFlow.js)
+- **Micrófono**: análisis de nivel de audio y detección de palabras clave
+- **GPS**: coordenadas con precisión alta; las lecturas con precisión > 20 metros se descartan automáticamente
+
+## Exportación de evidencia
+
+Desde la página de Operaciones, el botón "Descargar JSON" genera un archivo con todos los eventos registrados, incluyendo:
+- Timestamp ISO de exportación
+- Cantidad total de eventos
+- Cada evento con: id, tipo, timestamp, lat/lng, hash, previousHash, firma Dilithium, cryptoVerified, metadata, demo
+- Indicador visual verde "Exportado" confirma que la descarga fue exitosa
 
 ## Integración UE5
 
