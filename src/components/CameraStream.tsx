@@ -9,7 +9,6 @@ export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoEl
   const [facing, setFacing] = useState<'environment' | 'user'>('environment');
   const [error, setError] = useState<string | null>(null);
   const [switching, setSwitching] = useState(false);
-  const [connecting, setConnecting] = useState(false);
 
   const realMode = state.settings.realMode;
   const powerSaving = state.settings.powerSavingMode;
@@ -26,12 +25,10 @@ export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoEl
 
   const startStream = useCallback(async () => {
     setSwitching(true);
-    setConnecting(true);
     stopStream();
     if (!realMode || powerSaving) {
       setSensors({ cameraActive: false, cameraError: null });
       setSwitching(false);
-      setConnecting(false);
       return;
     }
     try {
@@ -40,7 +37,6 @@ export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoEl
         setError(msg);
         setSensors({ cameraError: msg, cameraActive: false });
         setSwitching(false);
-        setConnecting(false);
         return;
       }
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -60,7 +56,6 @@ export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoEl
       setSensors({ cameraError: msg, cameraActive: false });
     } finally {
       setSwitching(false);
-      setConnecting(false);
     }
   }, [realMode, powerSaving, facing, stopStream, setSensors]);
 
@@ -82,8 +77,8 @@ export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoEl
   if (!realMode || powerSaving) {
     return (
       <div className="rounded-xl p-4 flex flex-col items-center gap-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-        <CameraOff size={24} style={{ color: '#9CA3AF' }} aria-hidden="true" />
-        <span className="text-sm text-center" style={{ color: '#9CA3AF' }}>
+        <CameraOff size={24} style={{ color: '#6B7280' }} />
+        <span className="text-xs text-center" style={{ color: '#6B7280' }}>
           {powerSaving ? 'Camara desactivada en modo ahorro' : 'Activa modo Real para ver la camara'}
         </span>
       </div>
@@ -103,41 +98,39 @@ export default function CameraStream({ setVideo }: { setVideo?: (el: HTMLVideoEl
           muted
           className="w-full h-full object-cover"
           style={{ transform: facing === 'user' ? 'scaleX(-1)' : 'none' }}
-          aria-label="Transmisión de cámara en vivo"
         />
-        {(switching || connecting) && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ background: 'rgba(0,0,0,0.6)' }} role="status" aria-label="Conectando cámara">
-            <div className="connecting-dots" aria-hidden="true"><span /><span /><span /></div>
-            <span className="text-sm" style={{ color: '#FBBF24' }}>Conectando...</span>
+        {switching && (
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
+            <RefreshCw size={24} className="animate-spin" style={{ color: '#FBBF24' }} />
           </div>
         )}
         {error && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ background: 'rgba(0,0,0,0.8)' }} role="alert">
-            <CameraOff size={24} style={{ color: '#EF4444' }} aria-hidden="true" />
-            <span className="text-sm text-center px-4" style={{ color: '#EF4444' }}>{error}</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ background: 'rgba(0,0,0,0.8)' }}>
+            <CameraOff size={24} style={{ color: '#EF4444' }} />
+            <span className="text-xs text-center px-4" style={{ color: '#EF4444' }}>{error}</span>
           </div>
         )}
-        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: 'rgba(0,0,0,0.6)' }} role="img" aria-label="Grabando">
-          <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#EF4444' }} aria-hidden="true" />
-          <span className="text-sm font-mono text-white">REC</span>
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: 'rgba(0,0,0,0.6)' }}>
+          <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#EF4444' }} />
+          <span className="text-[9px] font-mono text-white">REC</span>
         </div>
         <div className="absolute top-2 right-2 flex items-center gap-1">
-          <button onClick={handleFullscreen} aria-label="Pantalla completa" className="press-feedback p-1.5 rounded-lg active:scale-90" style={{ background: 'rgba(0,0,0,0.6)' }}>
-            <Maximize2 size={14} style={{ color: '#FBBF24' }} aria-hidden="true" />
+          <button onClick={handleFullscreen} className="p-1.5 rounded-lg active:scale-90" style={{ background: 'rgba(0,0,0,0.6)' }}>
+            <Maximize2 size={14} style={{ color: '#FBBF24' }} />
           </button>
-          <button onClick={handleSwitch} aria-label="Cambiar cámara" className="press-feedback p-1.5 rounded-lg active:scale-90" style={{ background: 'rgba(0,0,0,0.6)' }}>
-            <RefreshCw size={14} style={{ color: '#FBBF24' }} aria-hidden="true" />
+          <button onClick={handleSwitch} className="p-1.5 rounded-lg active:scale-90" style={{ background: 'rgba(0,0,0,0.6)' }}>
+            <RefreshCw size={14} style={{ color: '#FBBF24' }} />
           </button>
         </div>
       </div>
       <div className="flex items-center justify-between px-3 py-2" style={{ background: 'rgba(10,12,18,0.95)' }}>
         <div className="flex items-center gap-1.5">
-          <Camera size={14} style={{ color: state.sensors.cameraActive ? '#22C55E' : '#EF4444' }} aria-hidden="true" />
-          <span className="text-sm font-medium" style={{ color: '#9CA3AF' }}>
+          <Camera size={14} style={{ color: state.sensors.cameraActive ? '#22C55E' : '#EF4444' }} />
+          <span className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>
             {facing === 'environment' ? 'Camara Trasera' : 'Camara Frontal'}
           </span>
         </div>
-        <span className="text-sm font-mono" style={{ color: state.sensors.cameraActive ? '#22C55E' : '#EF4444' }} role="status" aria-label={state.sensors.cameraActive ? 'En vivo' : 'Sin señal'}>
+        <span className="text-[9px] font-mono" style={{ color: state.sensors.cameraActive ? '#22C55E' : '#EF4444' }}>
           {state.sensors.cameraActive ? 'EN VIVO' : 'SIN SENAL'}
         </span>
       </div>
