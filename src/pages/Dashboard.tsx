@@ -76,20 +76,37 @@ export default function Dashboard({ isTechnical, onArm, setVideo }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl p-3" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
-          <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: '#6B7280' }}>Confianza</div>
-          <div className="text-xl font-bold font-mono" style={{ color: state.confidence > 80 ? '#22C55E' : state.confidence > 60 ? '#FBBF24' : '#EF4444' }}>
-            {state.confidence}%
+      {isTechnical ? (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl p-3" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
+            <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: '#6B7280' }}>Confianza</div>
+            <div className="text-xl font-bold font-mono" style={{ color: state.confidence > 80 ? '#22C55E' : state.confidence > 60 ? '#FBBF24' : '#EF4444' }}>
+              {state.confidence}%
+            </div>
+          </div>
+          <div className="rounded-xl p-3" style={{ background: 'rgba(26,42,58,0.15)', border: '1px solid rgba(26,42,58,0.4)' }}>
+            <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: '#6B7280' }}>Carga Cognitiva</div>
+            <div className="text-xl font-bold font-mono" style={{ color: state.cognitiveLoad > 70 ? '#EF4444' : state.cognitiveLoad > 50 ? '#FBBF24' : '#22C55E' }}>
+              {state.cognitiveLoad}%
+            </div>
           </div>
         </div>
-        <div className="rounded-xl p-3" style={{ background: 'rgba(26,42,58,0.15)', border: '1px solid rgba(26,42,58,0.4)' }}>
-          <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: '#6B7280' }}>Carga Cognitiva</div>
-          <div className="text-xl font-bold font-mono" style={{ color: state.cognitiveLoad > 70 ? '#EF4444' : state.cognitiveLoad > 50 ? '#FBBF24' : '#22C55E' }}>
-            {state.cognitiveLoad}%
+      ) : (
+        <div className="rounded-xl p-4 flex items-center gap-3" style={{
+          background: state.alertLevel === 'SEGURO' ? 'rgba(34,197,94,0.08)' : state.alertLevel === 'ALERTA' ? 'rgba(251,191,36,0.08)' : 'rgba(239,68,68,0.08)',
+          border: `1px solid ${alertCfg.color}33`,
+        }}>
+          <ShieldCheck size={28} style={{ color: alertCfg.color, filter: `drop-shadow(0 0 6px ${alertCfg.color}66)` }} />
+          <div>
+            <div className="text-sm font-semibold" style={{ color: alertCfg.color }}>
+              {state.alertLevel === 'SEGURO' ? 'Sistema seguro' : state.alertLevel === 'ALERTA' ? 'Atencion requerida' : 'Alerta critica'}
+            </div>
+            <div className="text-xs" style={{ color: '#9CA3AF' }}>
+              {state.alertLevel === 'SEGURO' ? 'Todo funciona con normalidad' : state.alertLevel === 'ALERTA' ? 'Revisar eventos recientes' : 'Responder de inmediato'}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <button
         onClick={() => { onArm(); setStatus(state.status === 'ARMADO' ? 'DESARMADO' : 'ARMADO'); }}

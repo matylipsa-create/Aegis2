@@ -1,8 +1,10 @@
-import { Activity, Send, Radio, Database, CircleCheck as CheckCircle2, ShieldCheck, ShieldAlert, Link2, KeyRound, Download } from 'lucide-react';
+import { Activity, Send, Radio, Database, CircleCheck as CheckCircle2, ShieldCheck, ShieldAlert, Link2, KeyRound, Download, CircleCheck } from 'lucide-react';
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function Operations() {
   const { state } = useApp();
+  const [exportSuccess, setExportSuccess] = useState(false);
   const verifiedCount = state.events.filter(e => e.cryptoVerified).length;
   const chainIntact = state.events.length > 0 && state.events.every((e, i, arr) => {
     if (i === arr.length - 1) return e.previousHash === '0'.repeat(64);
@@ -22,6 +24,8 @@ export default function Operations() {
     link.download = `aegis-evidencia-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
     link.click();
     URL.revokeObjectURL(url);
+    setExportSuccess(true);
+    setTimeout(() => setExportSuccess(false), 3000);
   };
 
   return (
@@ -33,8 +37,13 @@ export default function Operations() {
           </div>
           <button onClick={downloadEvidence} disabled={state.events.length === 0}
             className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-            style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)', color: '#FBBF24' }}>
-            <Download size={13} /> Descargar JSON
+            style={{
+              background: exportSuccess ? 'rgba(34,197,94,0.15)' : 'rgba(251,191,36,0.12)',
+              border: exportSuccess ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(251,191,36,0.3)',
+              color: exportSuccess ? '#22C55E' : '#FBBF24',
+            }}>
+            {exportSuccess ? <CircleCheck size={13} /> : <Download size={13} />}
+            {exportSuccess ? 'Exportado' : 'Descargar JSON'}
           </button>
       </div>
 
