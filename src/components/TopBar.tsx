@@ -21,11 +21,11 @@ export default function TopBar({ onToggleMode, onOpenSettings, onOpenMetrics }: 
   const isPowerSaving = state.settings.powerSavingMode;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-3 py-2.5"
+    <header role="banner" className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-3 py-2.5"
       style={{ background: 'rgba(10,12,26,0.95)', borderBottom: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', height: 52 }}>
-      <button onClick={onOpenMetrics} className="flex items-center gap-2 active:scale-95 transition-all">
-        <div className="relative">
-          <Shield size={22} style={{ color: '#FBBF24', filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }} />
+      <button onClick={onOpenMetrics} aria-label="Abrir métricas del sistema" className="press-feedback flex items-center gap-2 active:scale-95 transition-all">
+        <div className="relative" role="img" aria-label={`Nivel de alerta: ${state.alertLevel}`}>
+          <Shield size={22} style={{ color: '#FBBF24', filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }} aria-hidden="true" />
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full" style={{
             background: alert.color,
             boxShadow: `0 0 6px ${alert.color}`,
@@ -37,31 +37,31 @@ export default function TopBar({ onToggleMode, onOpenSettings, onOpenMetrics }: 
 
       <div className="flex items-center gap-2">
         {isPowerSaving && (
-          <span className="power-saving-indicator flex items-center gap-1">
-            <BatteryLow size={10} />
+          <span className="power-saving-indicator flex items-center gap-1" role="status" aria-label="Modo ahorro de energía activo">
+            <BatteryLow size={14} aria-hidden="true" />
             AHORRO
           </span>
         )}
 
-        <span className={`badge-status ${alert.cls}`}>
+        <span className={`badge-status ${alert.cls}`} role="status" aria-label={`Estado: ${state.alertLevel}`}>
           {state.alertLevel}
         </span>
 
-        <button onClick={onToggleMode}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all active:scale-95"
+        <button onClick={onToggleMode} aria-label={`Cambiar a modo ${isTechnical ? 'normal' : 'técnico'}`}
+          className="press-feedback mode-transition flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all active:scale-95"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: isTechnical ? '#FBBF24' : '#9CA3AF' }}>
+          <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: isTechnical ? '#FBBF24' : '#9CA3AF' }}>
             {isTechnical ? 'TECNICO' : 'NORMAL'}
           </span>
-          {isTechnical ? <ChevronUp size={12} style={{ color: '#FBBF24' }} /> : <ChevronDown size={12} style={{ color: '#9CA3AF' }} />}
+          {isTechnical ? <ChevronUp size={16} style={{ color: '#FBBF24' }} aria-hidden="true" /> : <ChevronDown size={16} style={{ color: '#9CA3AF' }} aria-hidden="true" />}
         </button>
 
-        <button onClick={onOpenSettings}
-          className="p-1.5 rounded-lg transition-all active:scale-90"
+        <button onClick={onOpenSettings} aria-label="Abrir configuración"
+          className="press-feedback p-1.5 rounded-lg transition-all active:scale-90"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <SettingsIcon size={16} style={{ color: '#9CA3AF' }} />
+          <SettingsIcon size={16} style={{ color: '#9CA3AF' }} aria-hidden="true" />
         </button>
       </div>
-    </div>
+    </header>
   );
 }
